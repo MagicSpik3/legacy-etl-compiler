@@ -1,3 +1,2 @@
-# legacy-etl-compiler
-legacy-etl-compiler
-
+# Legacy ETL Compiler Suite
+The orchestrator for the SPSS-to-R compilation toolchain.
