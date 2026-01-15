@@ -1,0 +1,13 @@
+# Use LOCAL relative paths (The '..' means 'go up one folder')
+-e ../etl-ir-core
+-e ../spec_generator
+-e ../etl_optimizer
+-e ../etl-r-generator
+
+# External libraries
+click==8.3.1
+networkx==3.6.1
+pydantic==2.12.5
+PyYAML==6.0.3
+jinja2
+pytest
