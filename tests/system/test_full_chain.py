@@ -48,6 +48,25 @@ class TestSystemIntegration:
         
         content = output_r.read_text()
         # Check for traces of all 3 components:
-        assert "load_csv" in content or "read.csv" in content # Generator worked
+        # 🟢 FIX: Check for Tidyverse 'read_csv' (underscore), not 'read.csv' (dot)
+        # Note: Since your SPSS used "DATA LIST", it might generate a weird read line
+        # depending on how GraphBuilder handles inline data. 
+        # But generally, we look for Tidyverse syntax now.
+        assert "read_csv" in content or "tibble" in content 
         assert "mutate" in content # Parser + Builder worked
         # (Optional) Check for optimization artifacts if relevant
+
+        # 4. Verify Artifacts
+        output_r = project_dir / "dist" / "script.R"
+        assert output_r.exists()
+              
+        # Check for the math
+        assert "mutate" in content
+        assert "x = 1" in content
+        
+        # Check for the save
+        assert "write_csv" in content
+
+        content = output_r.read_text()
+        print("\n👇 GENERATED R SCRIPT 👇")
+        print(content) # Print it so you can see the beauty!
