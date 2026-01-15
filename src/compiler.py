@@ -2,61 +2,75 @@ import yaml
 import click
 from pathlib import Path
 
-# 🟢 The New Imports (From your bolt-on libraries)
-from spec_generator.parser import SpssParser
-from spec_generator.graph_builder import GraphBuilder
+# 1. Imports
+from etl_ir.model import Pipeline
+from spec_generator.importers.spss.parser import SpssParser
+from spec_generator.importers.spss.graph_builder import GraphBuilder
 from etl_optimizer.coordinator import OptimizationCoordinator
-from generator.transpiler import RTranspiler
-# Future: from generator.excel import ExcelRulesGenerator 
+# 🟢 CHANGE: Import RGenerator, not RTranspiler
+from etl_r_generator.builder import RGenerator
 
 @click.command()
 @click.option('--manifest', default='compiler.yaml', help='Path to project manifest')
 def build(manifest):
     """
-    Enterprise Compiler: Bolts components together based on config.
+    The Enterprise Compiler CLI
     """
-    # 1. Load Config (Direction 1)
-    config = yaml.safe_load(Path(manifest).read_text())
-    
-    input_path = Path(config['inputs']['primary_logic'])
-    output_target = config['output']['target'] # e.g., 'r_script' or 'excel_rules'
-    
-    print(f"🚀 Compiling {input_path} -> {output_target}...")
+    manifest_path = Path(manifest)
+    if not manifest_path.exists():
+        click.echo(f"❌ Manifest not found: {manifest}")
+        return
 
-    # 2. Ingest (spec_generator)
-    print("   [1/4] Parsing SPSS...")
-    parser = SpssParser()
-    # Read file content
-    code = input_path.read_text()
-    ast = parser.parse(code)
-    
-    # Build Initial Graph
-    builder = GraphBuilder()
-    pipeline = builder.build(ast)
+    # 1. Load Config
+    with open(manifest_path) as f:
+        config = yaml.safe_load(f)
 
-    # 3. Optimize (etl_optimizer)
-    print("   [2/4] Optimizing Topology...")
-    optimizer = OptimizationCoordinator()
-    # You might need to adjust the optimizer signature to accept the Pipeline object
-    optimized_pipeline = optimizer.optimize(pipeline)
+    spss_path = config['inputs']['primary_logic']
+    output_path = config['output']['path']
+    target_lang = config['output']['target']
 
-    # 4. Generate (etl-r-generator)
-    print(f"   [3/4] Generating Artifacts ({output_target})...")
-    
-    if output_target == 'r_script':
-        transpiler = RTranspiler()
-        # We need to make sure RTranspiler accepts the Pipeline object directly
-        # or we use the Builder pattern from the generator repo
-        output_code = transpiler.transpile(optimized_pipeline)
+    click.echo(f"🚀 Compiling {spss_path} -> {target_lang}...")
+
+    try:
+        # --- Step 1: Parsing ---
+        click.echo("    [1/4] Parsing SPSS...")
+        with open(spss_path, 'r') as f:
+            source_code = f.read()
         
-        out_file = Path(config['output']['path'])
+        parser = SpssParser()
+        ast = parser.parse(source_code)
+        
+        # Build Initial IR
+        # 🟢 FIX: Pass config as metadata to GraphBuilder
+        builder = GraphBuilder(metadata=config)
+        pipeline = builder.build(ast)
+
+        # --- Step 2: Optimization ---
+        click.echo("    [2/4] Optimizing Topology...")
+        optimizer = OptimizationCoordinator()
+        optimized_pipeline = optimizer.optimize(pipeline)
+
+        # --- Step 3: Code Generation ---
+        click.echo(f"    [3/4] Generating Artifacts ({target_lang})...")
+        
+        if target_lang == 'r_script':
+            # 🟢 FIX: Use RGenerator(pipeline)
+            generator = RGenerator(optimized_pipeline)
+            output_code = generator.generate()
+        else:
+            raise NotImplementedError(f"Target language '{target_lang}' not supported")
+
+        # --- Step 4: Write Output ---
+        out_file = Path(output_path)
         out_file.parent.mkdir(parents=True, exist_ok=True)
         out_file.write_text(output_code)
         
-    elif output_target == 'rules_engine_excel':
-        print("   ⚠️ Excel Generator not yet implemented (Direction 3)")
-    
-    print("✅ Build Complete.")
+        click.echo(f"✅ Success! Compiled to: {output_path}")
+
+    except Exception as e:
+        click.echo(f"❌ Error: {str(e)}")
+        # Re-raise so Click sees the non-zero exit code during tests
+        raise e
 
 if __name__ == '__main__':
     build()
