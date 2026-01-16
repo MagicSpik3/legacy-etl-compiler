@@ -7,7 +7,7 @@ from typing import List
 # Import your modules
 from spec_generator.importers.spss.parser import SpssParser
 from spec_generator.importers.spss.graph_builder import GraphBuilder
-from etl_optimizer.coordinator import OptimizerCoordinator
+from etl_optimizer.coordinator import OptimizationCoordinator
 from etl_r_generator.builder import RGenerator
 from etl_ir.model import Pipeline
 
@@ -95,7 +95,7 @@ def compile_pipeline(manifest_path: str):
 
     # --- STAGE 3: Optimization (The Managed State Machine) ---
     print("\n[Stage 3] Optimization")
-    optimizer = OptimizerCoordinator()
+    optimizer = OptimizationCoordinator()
     optimized_pipeline = optimizer.optimize(raw_pipeline)
     
     artifacts.save_topology("03_optimized_topology.yaml", optimized_pipeline)
