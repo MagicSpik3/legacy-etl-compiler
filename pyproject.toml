@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "legacy-etl-compiler"
+version = "0.1.0"
+description = "Orchestrator for the SPSS to R Migration Compiler"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    # It depends on the other 4 libraries in the suite
+    "etl-ir-core",
+    "spec-generator",
+    "etl-optimizer",
+    "etl-r-generator",
+    "pyyaml"  # Added because we are now dumping YAML verification files
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
