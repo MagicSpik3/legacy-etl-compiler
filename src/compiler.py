@@ -93,6 +93,10 @@ def compile_pipeline(manifest_path: str):
     
     artifacts.save_topology("02_raw_topology.yaml", raw_pipeline)
 
+
+
+
+
     # --- STAGE 3: Optimization (The Managed State Machine) ---
     print("\n[Stage 3] Optimization")
     optimizer = OptimizationCoordinator()
