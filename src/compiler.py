@@ -71,7 +71,8 @@ def compile_pipeline(manifest_path: str):
     
     # Read the SPSS Source
     # (Assuming manifest points to 'pipeline.sps' for now, hardcoding for demo)
-    sps_file = "pipeline.sps" 
+
+    sps_file = manifest_path 
     with open(sps_file, "r") as f:
         sps_code = f.read()
 
