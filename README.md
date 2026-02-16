@@ -1,5 +1,55 @@
 # 🚀 Enterprise ETL Compiler Platform
 
+How to run:
+
+# Deactivate any active conda environments
+conda deactivate
+
+# Activate the local Python virtual environment
+source venv/bin/activate
+
+# (Optional) Verify versioning is recognized
+python3 -c "from importlib.metadata import version; print(version('spec_generator'))"
+
+# Navigate to your data/logic folder
+cd git/SPSS-examplles/was/
+
+# Run the compiler pointing to the manifest
+(venv) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ python src/compiler.py --manifest ~/git_etl_old/SPSS-examplles/hello_world/hello.sps
+🚀 Starting V&V Compilation Cycle...
+📂 Artifacts will be saved to: dist/verification
+
+[Stage 1] Source Verification
+  ⚙️  Executed: pspp -> 01_source_verification.txt
+
+[Stage 2] Parsing & Raw Topology
+  📝 Saved: 02_raw_topology.yaml
+
+[Stage 3] Optimization
+  📝 Saved: 03_optimized_topology.yaml
+  📉 Compression: 3 ops -> 3 ops
+
+[Stage 4] Code Generation
+  💾 Writing Final R Script to: dist/pipeline.R
+  📝 Saved: 04_generated_code.R
+
+[Stage 5] Target Verification (R Execution)
+  ⚙️  Executed: Rscript -> 05_target_verification.txt
+
+✅ V&V Cycle Complete.
+(venv) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ 
+
+# or 
+# From the root of the legacy-etl-compiler project:
+./etl_compiler.sh demo/input/my_logic.sps demo/input/data.csv
+
+# Run the full test suite with PYTHONPATH defined
+PYTHONPATH=src:. pytest -vs
+
+# Run the specific system integration test for PSPP compliance
+PYTHONPATH=src:. pytest -vs tests/test_system_integration.py::TestSystemIntegration::test_pspp_compliance[01_load_sort_save]
+
+
 > **Status:** Production Ready (MVP) | **Version:** 1.0.0
 
 The **Enterprise ETL Compiler** is a modular platform designed to automate the migration of legacy data logic (SPSS) into modern, maintainable data pipelines (R/Tidyverse).
@@ -159,3 +209,70 @@ We do not generate "machine code." We generate **Human-Readable** code. The outp
 ```
 
 ---
+No more guessing—the "Territory" is clear now. According to your `dir()` output, the primary entry point is indeed **`parse`**, but the rest of the class is composed of specialized private methods (like `_parse_get_data` and `_parse_sort`) that handle the heavy lifting.
+
+Since `parse_string` doesn't exist, we should definitely refactor the `SpssParser` class. Currently, your `parse` method likely opens a file path. By splitting it, we allow the unit tests to pass in strings directly, bypassing the filesystem.
+
+### The Refactor: Splitting the "Map" from the "Source"
+
+In your `spec_generator/src/spec_generator/importers/spss/parser.py`, you should restructure your `parse` logic like this:
+
+```python
+class SpssParser:
+    # ... your __init__ and other methods ...
+
+    def parse(self, file_path):
+        """The original entry point for the CLI."""
+        with open(file_path, 'r') as f:
+            content = f.read()
+        return self.parse_string(content)
+
+    def parse_string(self, text):
+        """The new entry point for Unit Tests."""
+        # 1. Tokenize the text
+        # 2. Loop through tokens and call your _parse_ methods
+        # 3. Return the topology (list of IR operations)
+        
+        # This is where your existing logic from the old 'parse' 
+        # should now live.
+        self.tokens = self.tokenize(text) # Assuming you have a tokenizer
+        self.pos = 0
+        return self._do_parse_logic() 
+
+```
+
+---
+
+### Updated Unit Test
+
+Once you’ve added `parse_string` to the class, your unit test will work exactly as we wrote it:
+
+```python
+def test_load_parameter_integrity():
+    spss_content = """
+    GET DATA
+      /TYPE=TXT
+      /FILE='test.csv'
+      /FIRSTCASE=2
+      /VARIABLES=id F8.0.
+    """
+    parser = SpssParser()
+    # This now works because we've added the method to the class!
+    topology = parser.parse_string(spss_content)
+    
+    load_op = next(op for op in topology if op.type == "LOAD_CSV")
+    assert load_op.params['skip_rows'] == 1
+
+```
+
+### Why this is the "Engineer's Choice"
+
+* **Test Speed:** Disk I/O is slow. Testing strings in memory is near-instant.
+* **Flexibility:** If you ever decide to build a web-based "SPSS to R" converter, you can pass the text from a web form straight into `parse_string` without saving it to a temporary file first.
+* **Clarity:** It separates the **Transport Layer** (getting the file from the disk) from the **Logic Layer** (understanding what the SPSS actually says).
+
+### A Note on the `_parse_` methods
+
+I see `_parse_get_data`, `_parse_sort`, and `_parse_variables_block` in your `dir()` output. These are the internal gears. If your `parse_string` refactor goes well, your unit tests are effectively exercising these private gears in a controlled environment.
+
+**Would you like me to help you draft the `parse_string` implementation based on how your `advance()` and `peek_token()` methods currently work?**
