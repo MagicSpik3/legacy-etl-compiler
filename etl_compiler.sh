@@ -6,7 +6,7 @@ set -e
 # Usage Check
 if [ "$#" -ne 2 ]; then
     echo "Usage: ./etl_compiler.sh <path_to_sps> <path_to_csv>"
-    echo "Example: ./etl_compiler.sh my_logic.sps my_data.csv"
+    echo "Example:  ./etl_compiler.sh demo/input/my_logic.sps demo/input/data.csv"
     exit 1
 fi
 
@@ -15,7 +15,7 @@ INPUT_CSV=$(realpath "$2")
 BASENAME=$(basename "$INPUT_SPS" .sps)
 
 # Paths to Repos (Updated for new structure)
-REPO_1="components/spec_generator"
+REPO_1="/home/jonny/git/spec_generator"
 REPO_2="components/etl_optimizer"
 REPO_3="components/etl-r-generator"
 OUTPUT_DIR="output_$BASENAME"

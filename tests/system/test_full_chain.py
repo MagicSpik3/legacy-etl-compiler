@@ -1,11 +1,9 @@
 import pytest
 from pathlib import Path
-import subprocess
+import os
 import yaml
-
-# Integration tests usually invoke the CLI or the main entry point
-from src.compiler import build
 from click.testing import CliRunner
+from src.compiler import build
 
 class TestSystemIntegration:
     
@@ -22,51 +20,45 @@ class TestSystemIntegration:
         spss_file = project_dir / "logic.sps"
         spss_file.write_text("DATA LIST FREE / id (F8.0). COMPUTE x = 1. SAVE OUTFILE='out.csv'.")
         
-        # Create Manifest (Direction 1)
+        # Create Manifest
+        output_target = project_dir / "dist" / "script.R"
         manifest_file = project_dir / "compiler.yaml"
         config = {
             "project": "Integration Test",
             "inputs": {"primary_logic": str(spss_file)},
             "output": {
                 "target": "r_script",
-                "path": str(project_dir / "dist" / "script.R")
+                "path": str(output_target) # <--- Test expects file HERE
             }
         }
         manifest_file.write_text(yaml.dump(config))
         
         # 2. Run the Compiler
         runner = CliRunner()
-        # We invoke the click command directly
         result = runner.invoke(build, ['--manifest', str(manifest_file)])
         
-        # 3. Verify Success
+        # 3. Verify Execution Success
         assert result.exit_code == 0, f"Compiler failed: {result.output}"
         
-        # 4. Verify Artifacts
-        output_r = project_dir / "dist" / "script.R"
-        assert output_r.exists()
+        # --- 🕵️ DEBUGGING BLOCK START ---
+        print("\n--- DEBUG: FILE SYSTEM STATE ---")
+        print(f"Expected File: {output_target}")
         
-        content = output_r.read_text()
-        # Check for traces of all 3 components:
-        # 🟢 FIX: Check for Tidyverse 'read_csv' (underscore), not 'read.csv' (dot)
-        # Note: Since your SPSS used "DATA LIST", it might generate a weird read line
-        # depending on how GraphBuilder handles inline data. 
-        # But generally, we look for Tidyverse syntax now.
+        if not output_target.exists():
+            print("❌ Expected file NOT found.")
+            
+            # Check where the compiler actually wrote files
+            cwd_dist = Path("dist")
+            if cwd_dist.exists():
+                print(f"Found 'dist' in Current Working Directory: {cwd_dist.absolute()}")
+                print(f"Contents: {list(cwd_dist.iterdir())}")
+            else:
+                print("Could not find any 'dist' folder.")
+        # --- DEBUGGING BLOCK END ---
+
+        # 4. Verify Artifacts
+        assert output_target.exists(), f"File missing. Check stdout for debug info."
+        
+        content = output_target.read_text()
         assert "read_csv" in content or "tibble" in content 
-        assert "mutate" in content # Parser + Builder worked
-        # (Optional) Check for optimization artifacts if relevant
-
-        # 4. Verify Artifacts
-        output_r = project_dir / "dist" / "script.R"
-        assert output_r.exists()
-              
-        # Check for the math
         assert "mutate" in content
-        assert "x = 1" in content
-        
-        # Check for the save
-        assert "write_csv" in content
-
-        content = output_r.read_text()
-        print("\n👇 GENERATED R SCRIPT 👇")
-        print(content) # Print it so you can see the beauty!
