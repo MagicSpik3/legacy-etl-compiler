@@ -276,3 +276,57 @@ def test_load_parameter_integrity():
 I see `_parse_get_data`, `_parse_sort`, and `_parse_variables_block` in your `dir()` output. These are the internal gears. If your `parse_string` refactor goes well, your unit tests are effectively exercising these private gears in a controlled environment.
 
 **Would you like me to help you draft the `parse_string` implementation based on how your `advance()` and `peek_token()` methods currently work?**
+
+
+
+Reviewed compiler.py and test_system_integration.py, explained pipeline architecture
+Looking at the code in compiler.py (and the associated tests in tests/…) makes the structure of the “compiler” very clear – it is not a simple one‑step translator, but a five‑stage verification &‑validation pipeline that sits between an SPSS/PSPP script and a runnable R program.
+
+🔍 High‑level architecture
+Input/manifest parsing
+The entry‑point CLI (build/compile_pipeline) accepts either a raw .sps file or a small YAML manifest.
+The manifest is used to locate the primary SPSS logic file and (optionally) where the generated R script should be written.
+
+Stage 1 – Source verification
+Before doing anything else the pipeline invokes pspp on the source logic and captures the output in dist/verification/01_source_verification.txt.
+This ensures that the SPSS code is syntactically valid and can run under the open‑source PSPP interpreter.
+
+Stage 2 – Parse & build
+
+SpssParser (from spec_generator.importers.spss.parser) reads the SPSS text and produces an AST.
+GraphBuilder (from spec_generator.importers.spss.graph_builder) walks that AST and constructs an intermediate pipeline model (etl_ir.model.Pipeline), essentially a list of operations with inputs, outputs and parameters.
+ArtifactManager.save_topology dumps this “raw topology” to 02_raw_topology.yaml for inspection.
+Stage 3 – Optimization
+An OptimizationCoordinator from etl_optimizer takes the raw pipeline and produces a streamlined version.
+The code prints a compression report and the optimized graph is saved as 03_optimized_topology.yaml.
+
+Stage 4 – Code generation
+RGenerator (from etl_r_generator) walks the optimized IR and emits R code.
+The output path comes from the manifest (or defaults to dist/pipeline.R), and both the final script and a copy for verification (04_generated_code.R) are written.
+
+Stage 5 – Target verification
+Finally, the generated R is executed with Rscript and the output/codes are logged in 05_target_verification.txt.
+This completes the V&V (verify‑and‑validate) cycle.
+
+All of the intermediate files are managed by the ArtifactManager, which creates a clean dist/verification directory on every run and provides helpers for writing text and topology dumps.
+
+📁 Supporting structure
+spec_generator – provides SPSS parsing and graph construction.
+etl_ir – defines the Pipeline model used through the compiler.
+etl_optimizer – implements rules to reduce/merge operations.
+etl_r_generator – generates R code from the IR.
+CLI – built with click, so python -m src.compiler --manifest path/to/manifest.yaml drives the whole process.
+The system‑level tests (test_system_integration.py) confirm the behaviour by running the compiler on small SPSS snippets and asserting that key R idioms appear in the output. Unit tests under unit and system exercise components of the pipeline (state‑machines, data flow, etc.).
+
+💡 What the pipeline “does”
+In short, the project is an ETL compiler that:
+
+Accepts SPSS/PSPP syntax.
+Verifies the source with PSPP.
+Parses the logic into an AST and builds an IR pipeline graph.
+Optimizes that graph to eliminate redundancies.
+Generates equivalent R code (using dplyr/haven style operations).
+Verifies the generated R by running it.
+Logs all intermediate artifacts for auditing and debugging.
+This architecture enables traceability (you can inspect raw vs. optimized topologies), makes it easy to add new optimizations or target languages, and ensures the translation stays in sync with the behaviour of the source through automated verification steps.
+
