@@ -1,0 +1,6 @@
+project: test
+inputs:
+  primary_logic: tmp_sav/logic.sps
+output:
+  target: r_script
+  path: tmp_sav/dist/script.R

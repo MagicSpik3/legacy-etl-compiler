@@ -1,332 +1,189 @@
-# 🚀 Enterprise ETL Compiler Platform
+# Legacy ETL Compiler — README
 
-How to run:
+Summary
+-------
+This repository is the legacy ETL compiler orchestration and entry point for a multi-repo ETL compiler platform. The project ingests legacy SPSS/PSPP logic, converts it into a structured intermediate representation (IR), applies semantic optimization and validation passes, and finally generates idiomatic R (tidyverse) code. The compiler performs static checks (e.g. ghost-column detection) and produces verification artifacts at each stage so changes are auditable.
 
-# Deactivate any active conda environments
-conda deactivate
+This README explains: intent, architecture, the compilation "State Machine", how to run the compiler on Linux and Windows, example invocations and expected artifact outputs, and short developer notes for common tasks.
 
-# Activate the local Python virtual environment
-source venv/bin/activate
+Intent & Use Cases
+------------------
+- Migrate legacy SPSS/PSPP analysis logic into reproducible, maintainable pipelines (R/Tidyverse).
+- Provide deterministic transformations so audit and compliance teams can review identical semantics between legacy and generated code.
+- Offer a modular pipeline so different frontends (parsers) or backends (code generators) can be swapped independently.
 
-# (Optional) Verify versioning is recognized
-python3 -c "from importlib.metadata import version; print(version('spec_generator'))"
+Repository Roles (high-level)
+----------------------------
+- `legacy-etl-compiler` (this repo): CLI & orchestration that wires together the other repos and exposes a manifest-based entrypoint.
+- `spec_generator`: SPSS/PSPP parser & AST → Graph builder.
+- `etl-ir-core`: Pydantic-based Intermediate Representation (IR) models shared across components.
+- `etl_optimizer`: Optimization and validation passes (semantic promotion, dead-code elimination, validators).
+- `etl-r-generator`: Generates R/Tidyverse code from the optimized IR.
 
-# Navigate to your data/logic folder
-cd git/SPSS-examplles/was/
+Compilation State Machine (overview)
+-----------------------------------
+The compiler executes a small state machine with deterministic stages. Each stage produces artifacts preserved under `dist/verification` to enable traceability.
 
-# Run the compiler pointing to the manifest
-(venv) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ python src/compiler.py --manifest ~/git_etl_old/SPSS-examplles/hello_world/hello.sps
-🚀 Starting V&V Compilation Cycle...
-📂 Artifacts will be saved to: dist/verification
+States & transitions
+- START: CLI starts, manifest parsed, locations resolved.
+- SOURCE_VERIFICATION: (State) runs tools like `pspp` to verify/convert input data sources. Produces `01_source_verification.txt`.
+- PARSING: (State) `spec_generator` parses SPSS text into an AST and initial topology. Produces `02_raw_topology.yaml`.
+- OPTIMIZATION: (State) `etl_optimizer` executes passes:
+  - Semantic Promotion (promote GENERIC ops into semantic ops like COMPUTE_COLUMNS).
+  - Vertical Collapsing (merge row-level mutates into batches).
+  - Validator (ghost column detection, topology cycles, disconnected islands).
+  Produces `03_optimized_topology.yaml` and stops with an error if validation fails.
+- CODE_GENERATION: (State) `etl-r-generator` translates the optimized IR into an R script. Produces `04_generated_code.R` (and optionally `dist/pipeline.R`).
+- TARGET_VERIFICATION: (Optional State) runs the generated R script to validate successful execution (produces `05_target_verification.txt`).
+- DONE: Completed successfully or errored with artifact outputs and logs.
 
-[Stage 1] Source Verification
-  ⚙️  Executed: pspp -> 01_source_verification.txt
+Error handling
+- If the Validator stage finds a critical issue (e.g. ghost column), the run ends early and the diagnostics are saved in `dist/verification`.
 
-[Stage 2] Parsing & Raw Topology
-  📝 Saved: 02_raw_topology.yaml
+Artifacts (typical)
+- `dist/verification/01_source_verification.txt` — Source tool output (pspp or other checks).
+- `dist/verification/02_raw_topology.yaml` — Parser output (raw operations and datasets).
+- `dist/verification/03_optimized_topology.yaml` — Optimizer output (promoted operations).
+- `dist/verification/04_generated_code.R` — Generated R script (readable by humans).
+- `dist/verification/05_target_verification.txt` — Output of test-run of the generated R code (optional).
 
-[Stage 3] Optimization
-  📝 Saved: 03_optimized_topology.yaml
-  📉 Compression: 3 ops -> 3 ops
+Quick Requirements
+------------------
+- Python 3.10+ (3.11/3.12 tested).
+- `pip` for installing Python dependencies (or use `conda`).
+- On systems that need SPSS parsing emulation, `pspp` may be required for some tests.
 
-[Stage 4] Code Generation
-  💾 Writing Final R Script to: dist/pipeline.R
-  📝 Saved: 04_generated_code.R
+Environment Setup — Linux (bash)
+--------------------------------
+1. Create & activate virtual environment
 
-[Stage 5] Target Verification (R Execution)
-  ⚙️  Executed: Rscript -> 05_target_verification.txt
-
-✅ V&V Cycle Complete.
-(venv) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ 
-
-# or 
-# From the root of the legacy-etl-compiler project:
-./etl_compiler.sh demo/input/my_logic.sps demo/input/data.csv
-
-# Run the full test suite with PYTHONPATH defined
-PYTHONPATH=src:. pytest -vs
-
-# Run the specific system integration test for PSPP compliance
-PYTHONPATH=src:. pytest -vs tests/test_system_integration.py::TestSystemIntegration::test_pspp_compliance[01_load_sort_save]
-
-
-> **Status:** Production Ready (MVP) | **Version:** 1.0.0
-
-The **Enterprise ETL Compiler** is a modular platform designed to automate the migration of legacy data logic (SPSS) into modern, maintainable data pipelines (R/Tidyverse).
-
-Unlike manual migration, which is error-prone and slow, this compiler builds a mathematical model of the logic, optimizes it for performance and security, and generates strictly typed code automatically.
-
-## 🏗 Architecture
-
-The platform is composed of 4 independent, decoupled libraries:
-
-1.  **`spec_generator` (Frontend):** Parses legacy SPSS into an Abstract Syntax Tree (AST).
-2.  **`etl-ir-core` (Protocol):** The shared "Intermediate Representation" (IR) that enforces type safety.
-3.  **`etl_optimizer` (Optimizer):** Performs Dead Code Elimination, Logic Collapsing, and Security Audits.
-4.  **`etl-r-generator` (Backend):** Generates idiomatic, human-readable Tidyverse code.
-
-## ⚡ Quick Start
-
-**Installation**
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
-
 ```
 
-**Usage**
-To compile a legacy project defined in `compiler.yaml`:
+2. If working across the sibling repos (common for development), use a PYTHONPATH that points each `src` directory at the workspace root. Example using absolute paths (from your workspace root):
 
 ```bash
-python3 src/compiler.py --manifest compiler.yaml
-
+export BASE=/home/you/git
+export PYTHONPATH="$BASE/legacy-etl-compiler/src:$BASE/spec_generator/src:$BASE/etl-ir-core/src:$BASE/etl_optimizer/src:$BASE/etl-r-generator/src:"
 ```
 
-**Example Output**
-The compiler turns spaghetti logic:
+Environment Setup — Windows (PowerShell)
+---------------------------------------
+1. Create & activate a virtual environment
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+2. Set PYTHONPATH for local development (PowerShell example):
+
+```powershell
+$Base = 'C:\Users\you\git'
+$env:PYTHONPATH = "$Base\legacy-etl-compiler\src;$Base\spec_generator\src;$Base\etl-ir-core\src;$Base\etl_optimizer\src;$Base\etl-r-generator\src"
+```
+
+Running the Compiler (manifest-driven)
+--------------------------------------
+1. Prepare a simple manifest file `compiler.yaml` (example):
+
+```yaml
+project: "My Migration"
+inputs:
+  primary_logic: path/to/logic.sps
+  # option: primary_data: path/to/data.csv
+output:
+  target: r_script
+  path: dist/pipeline.R
+```
+
+2. Run the CLI (Linux/Windows as appropriate):
+
+```bash
+# From the repo root; ensure PYTHONPATH includes sibling src directories when developing
+python src/compiler.py --manifest compiler.yaml
+```
+
+Expected output (short):
+
+- `dist/verification/01_source_verification.txt` — source check output
+- `dist/verification/02_raw_topology.yaml` — raw parser topology
+- `dist/verification/03_optimized_topology.yaml` — optimizer output
+- `dist/verification/04_generated_code.R` — final R code
+
+Developer notes & debugging tips
+--------------------------------
+- Running tests: always run with the multi-repo PYTHONPATH. Example (Linux):
+
+```bash
+PYTHONPATH=$PWD/src:$PWD/../spec_generator/src:$PWD/../etl-ir-core/src:$PWD/../etl_optimizer/src:$PWD/../etl-r-generator/src pytest -q
+```
+
+- If you see "Ghost Column" validation failures (e.g. a validator error referencing `'lag'`):
+  1. Inspect `dist/verification/02_raw_topology.yaml` to see how the parser emitted the compute expression.
+  2. Confirm the parser recognized `LAG()` and treated it as a function rather than a column name.
+  3. Confirm `etl_optimizer` `KNOWN_FUNCTIONS` includes `LAG` and `CONCAT` (or add them) so the validator ignores them as variables.
+
+- To run a single integration test (example) with correct environment:
+
+```bash
+PYTHONPATH=$PWD/src:$PWD/../spec_generator/src:$PWD/../etl-ir-core/src:$PWD/../etl_optimizer/src:$PWD/../etl-r-generator/src pytest -q tests/test_system_integration.py::TestSystemIntegration::test_pspp_compliance[05_lag]
+```
+
+Common Development tasks
+------------------------
+- Add a `parse_string()` method to the SPSS parser (in `spec_generator`) so unit tests can feed SPSS text without file I/O.
+- When modifying the promoter in `etl_optimizer` add unit tests that assert promoted op kinds for `MISSING`, `RECODE`, and `DO IF`.
+- When tweaking codegen, run the optimizer integration tests to ensure code style/keywords expected by tests (e.g. `paste0` vs `str_c`, `left_join` vs `inner_join`).
+
+Example: small end-to-end scenario
+---------------------------------
+Given a simple SPSS logic file `logic.sps`:
 
 ```spss
-COMPUTE x = 1.
-IF (y > 10) z = 2.
-EXECUTE.
-
+GET DATA /TYPE=TXT /FILE='data.csv' /FIRSTCASE=2.
+SORT CASES BY id.
+COMPUTE prev = LAG(val).
+SAVE OUTFILE='out.sav'.
 ```
 
-Into clean Tidyverse pipelines:
-
-```r
-df <- df %>%
-  mutate(x = 1) %>%
-  mutate(z = if_else(y > 10, 2, z))
-
-```
-
-## ✅ Key Benefits
-
-* **100% Deterministic:** No "copy-paste" errors.
-* **Self-Optimizing:** Automatically removes unused variables (Dead Code Elimination).
-* **Audit-Ready:** Detects "Ghost Columns" (variables used before definition) before code is even generated.
-
-```
-
----
-
-### 2. The Protocol (`etl-ir-core`)
-**Location:** `~/git/etl-ir-core/README.md`
-**Audience:** Architects & Developers.
-
-```markdown
-# 🧠 ETL IR Core (Intermediate Representation)
-
-This library defines the **Strict Type System** for the compiler platform. It serves as the contract between the Parser (SPSS) and the Generator (R).
-
-## Why It Matters
-By decoupling the input language from the output language, we avoid an $N \times M$ complexity problem. We parse once to IR, and can generate code for **R**, **Python**, **SQL**, or **Excel** from the same model.
-
-## Data Structures
-* **`Pipeline`**: The top-level container carrying Metadata, Datasets, and Operations.
-* **`Operation`**: Atomic logic units (e.g., `COMPUTE_COLUMNS`, `FILTER_ROWS`).
-* **`DataType`**: Strict enum types ensuring we never mix Strings and Integers accidentally.
-
-## Usage
-```python
-from etl_ir.model import Pipeline, Operation
-# Strictly typed validation via Pydantic
-
-```
-
-```
-
----
-
-### 3. The Frontend (`spec_generator`)
-**Location:** `~/git/spec_generator/README.md`
-**Audience:** The "Archaeologist" (You).
-
-```markdown
-# 🔍 SPSS Specification Generator
-
-The "Frontend" of the compiler. This library is responsible for ingesting legacy source code (SPSS Syntax) and standardizing it into the compiler's Intermediate Representation (IR).
-
-## Capabilities
-* **Lexical Analysis:** Tokenizes raw SPSS syntax.
-* **AST Construction:** Builds a tree of `ComputeNode`, `FilterNode`, etc.
-* **Graph Builder:** Converts the AST into a directed acyclic graph (DAG) of data flow.
-
-## supported Commands
-* `DATA LIST` / `GET DATA`
-* `COMPUTE` / `IF`
-* `SELECT IF` / `FILTER`
-* `MATCH FILES` (Joins)
-* `AGGREGATE`
-
-```
-
----
-
-### 4. The Brain (`etl_optimizer`)
-
-**Location:** `~/git/etl_optimizer/README.md`
-**Audience:** Data Engineers & Security.
-
-```markdown
-# ⚡ ETL Semantic Optimizer
-
-The "Brain" of the compiler. This engine takes the raw logic graph and improves it using compiler optimization techniques.
-
-## Optimization Passes
-1.  **Semantic Promotion:** Promotes generic text commands into typed Semantic Nodes.
-2.  **Vertical Collapsing:** Merges consecutive row-level operations (`mutate` chains) into single batch operations for performance.
-3.  **Dead Code Elimination (DCE):** Identifies and removes variables/datasets that are computed but never saved or used.
-
-## 🛡 Security Validator
-The optimizer includes a static analysis tool that detects:
-* **Ghost Columns:** Variables referenced before they are defined.
-* **Topology Cycles:** Infinite loops in data logic.
-* **Disconnected Islands:** Orphaned logic branches.
-
-```
-
----
-
-### 5. The Backend (`etl-r-generator`)
-
-**Location:** `~/git/etl-r-generator/README.md`
-**Audience:** The R Developers / Analysts.
-
-```markdown
-# 📉 ETL R-Generator
-
-The "Backend" of the compiler. It translates the Optimized IR Pipeline into production-grade R scripts.
-
-## Design Philosophy
-We do not generate "machine code." We generate **Human-Readable** code. The output is designed to look like it was written by a Senior Data Scientist using the `tidyverse`.
-
-## Features
-* **Dialect:** Tidyverse (`dplyr`, `readr`, `lubridate`).
-* **Visitor Pattern:** Extensible architecture to support new R libraries easily.
-* **Formatting:** Auto-indented, commented, and modular code blocks.
-
-```
-
----
-No more guessing—the "Territory" is clear now. According to your `dir()` output, the primary entry point is indeed **`parse`**, but the rest of the class is composed of specialized private methods (like `_parse_get_data` and `_parse_sort`) that handle the heavy lifting.
-
-Since `parse_string` doesn't exist, we should definitely refactor the `SpssParser` class. Currently, your `parse` method likely opens a file path. By splitting it, we allow the unit tests to pass in strings directly, bypassing the filesystem.
-
-### The Refactor: Splitting the "Map" from the "Source"
-
-In your `spec_generator/src/spec_generator/importers/spss/parser.py`, you should restructure your `parse` logic like this:
-
-```python
-class SpssParser:
-    # ... your __init__ and other methods ...
-
-    def parse(self, file_path):
-        """The original entry point for the CLI."""
-        with open(file_path, 'r') as f:
-            content = f.read()
-        return self.parse_string(content)
-
-    def parse_string(self, text):
-        """The new entry point for Unit Tests."""
-        # 1. Tokenize the text
-        # 2. Loop through tokens and call your _parse_ methods
-        # 3. Return the topology (list of IR operations)
-        
-        # This is where your existing logic from the old 'parse' 
-        # should now live.
-        self.tokens = self.tokenize(text) # Assuming you have a tokenizer
-        self.pos = 0
-        return self._do_parse_logic() 
-
-```
-
----
-
-### Updated Unit Test
-
-Once you’ve added `parse_string` to the class, your unit test will work exactly as we wrote it:
-
-```python
-def test_load_parameter_integrity():
-    spss_content = """
-    GET DATA
-      /TYPE=TXT
-      /FILE='test.csv'
-      /FIRSTCASE=2
-      /VARIABLES=id F8.0.
-    """
-    parser = SpssParser()
-    # This now works because we've added the method to the class!
-    topology = parser.parse_string(spss_content)
-    
-    load_op = next(op for op in topology if op.type == "LOAD_CSV")
-    assert load_op.params['skip_rows'] == 1
-
-```
-
-### Why this is the "Engineer's Choice"
-
-* **Test Speed:** Disk I/O is slow. Testing strings in memory is near-instant.
-* **Flexibility:** If you ever decide to build a web-based "SPSS to R" converter, you can pass the text from a web form straight into `parse_string` without saving it to a temporary file first.
-* **Clarity:** It separates the **Transport Layer** (getting the file from the disk) from the **Logic Layer** (understanding what the SPSS actually says).
-
-### A Note on the `_parse_` methods
-
-I see `_parse_get_data`, `_parse_sort`, and `_parse_variables_block` in your `dir()` output. These are the internal gears. If your `parse_string` refactor goes well, your unit tests are effectively exercising these private gears in a controlled environment.
-
-**Would you like me to help you draft the `parse_string` implementation based on how your `advance()` and `peek_token()` methods currently work?**
-
-
-
-Reviewed compiler.py and test_system_integration.py, explained pipeline architecture
-Looking at the code in compiler.py (and the associated tests in tests/…) makes the structure of the “compiler” very clear – it is not a simple one‑step translator, but a five‑stage verification &‑validation pipeline that sits between an SPSS/PSPP script and a runnable R program.
-
-🔍 High‑level architecture
-Input/manifest parsing
-The entry‑point CLI (build/compile_pipeline) accepts either a raw .sps file or a small YAML manifest.
-The manifest is used to locate the primary SPSS logic file and (optionally) where the generated R script should be written.
-
-Stage 1 – Source verification
-Before doing anything else the pipeline invokes pspp on the source logic and captures the output in dist/verification/01_source_verification.txt.
-This ensures that the SPSS code is syntactically valid and can run under the open‑source PSPP interpreter.
-
-Stage 2 – Parse & build
-
-SpssParser (from spec_generator.importers.spss.parser) reads the SPSS text and produces an AST.
-GraphBuilder (from spec_generator.importers.spss.graph_builder) walks that AST and constructs an intermediate pipeline model (etl_ir.model.Pipeline), essentially a list of operations with inputs, outputs and parameters.
-ArtifactManager.save_topology dumps this “raw topology” to 02_raw_topology.yaml for inspection.
-Stage 3 – Optimization
-An OptimizationCoordinator from etl_optimizer takes the raw pipeline and produces a streamlined version.
-The code prints a compression report and the optimized graph is saved as 03_optimized_topology.yaml.
-
-Stage 4 – Code generation
-RGenerator (from etl_r_generator) walks the optimized IR and emits R code.
-The output path comes from the manifest (or defaults to dist/pipeline.R), and both the final script and a copy for verification (04_generated_code.R) are written.
-
-Stage 5 – Target verification
-Finally, the generated R is executed with Rscript and the output/codes are logged in 05_target_verification.txt.
-This completes the V&V (verify‑and‑validate) cycle.
-
-All of the intermediate files are managed by the ArtifactManager, which creates a clean dist/verification directory on every run and provides helpers for writing text and topology dumps.
-
-📁 Supporting structure
-spec_generator – provides SPSS parsing and graph construction.
-etl_ir – defines the Pipeline model used through the compiler.
-etl_optimizer – implements rules to reduce/merge operations.
-etl_r_generator – generates R code from the IR.
-CLI – built with click, so python -m src.compiler --manifest path/to/manifest.yaml drives the whole process.
-The system‑level tests (test_system_integration.py) confirm the behaviour by running the compiler on small SPSS snippets and asserting that key R idioms appear in the output. Unit tests under unit and system exercise components of the pipeline (state‑machines, data flow, etc.).
-
-💡 What the pipeline “does”
-In short, the project is an ETL compiler that:
-
-Accepts SPSS/PSPP syntax.
-Verifies the source with PSPP.
-Parses the logic into an AST and builds an IR pipeline graph.
-Optimizes that graph to eliminate redundancies.
-Generates equivalent R code (using dplyr/haven style operations).
-Verifies the generated R by running it.
-Logs all intermediate artifacts for auditing and debugging.
-This architecture enables traceability (you can inspect raw vs. optimized topologies), makes it easy to add new optimizations or target languages, and ensures the translation stays in sync with the behaviour of the source through automated verification steps.
-
+Running the compiler should yield (artifacts):
+
+- `02_raw_topology.yaml`: shows a `LOAD`/`SORT`/`COMPUTE` sequence where `COMPUTE` contains an expression using `lag(val)`.
+- `03_optimized_topology.yaml`: `COMPUTE` remains, and validator ignores `lag` if it is recognized as a function.
+- `04_generated_code.R`: contains tidyverse-style reads and a `mutate(prev = dplyr::lag(val))` or equivalent mapping depending on generator options.
+
+Notes on the State Machine implementation
+----------------------------------------
+- The State Machine is simple and deterministic — each state is implemented as a stage function in `src/compiler.py` that receives the current `Pipeline` IR and returns either the next state or an error.
+- Each stage appends human-readable artifacts to `dist/verification` which are used by the next stage for debugging and auditing.
+- The validator stage is intentionally strict: failures block code generation and require developer action. This is by design to avoid producing code that would silently change semantics.
+
+Where to find important code
+----------------------------
+- CLI / orchestrator: `src/compiler.py` (entrypoint)
+- SPSS parser & AST builder: `../spec_generator/src/spec_generator/importers/spss/` (look for `parser.py` & `graph_builder.py`)
+- IR model: `../etl-ir-core/src/etl_ir/` (Pydantic models)
+- Optimizer / promoter: `../etl_optimizer/src/etl_optimizer/promoter.py` and `validator.py`
+- R generator: `../etl-r-generator/src/etl_r_generator/` (transpiler & builder modules)
+
+Contributing & tests
+--------------------
+- Add unit tests in each repo under `tests/unit` and integration tests under `tests/integration`.
+- Always run `pytest` with the multi-repo `PYTHONPATH` set to ensure modules are resolved correctly during development.
+
+Contact / Support
+-----------------
+If you need help understanding a specific failing scenario, open an issue or reach out to the team lead with the `dist/verification` artifacts for the failing run attached.
+
+License
+-------
+See the project `LICENSE` file for details.
+
+— End of README

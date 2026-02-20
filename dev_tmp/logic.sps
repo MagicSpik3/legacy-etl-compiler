@@ -1,0 +1,3 @@
+GET DATA /TYPE=TXT /FILE='data.csv' /VARIABLES=val F3.
+SORT CASES BY id.
+COMPUTE prev = LAG(val).
