@@ -1,0 +1,6 @@
+project: Test lag_inspect
+inputs:
+  primary_logic: dev_tmp/logic.sps
+output:
+  target: r_script
+  path: dev_tmp/dist/script.R
