@@ -1,0 +1,27 @@
+
+(venv) (base) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ source venv/bin/activate
+(venv) (base) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ python ~/git/legacy-etl-compiler/src/compiler.py --manifest ~/git_etl_old/SPSS-examplles/hello_world/hello.sps
+🚀 Starting V&V Compilation Cycle...
+📂 Artifacts will be saved to: dist/verification
+
+[Stage 1] Source Verification
+  ⚙️  Executed: pspp -> 01_source_verification.txt
+
+[Stage 2] Parsing & Raw Topology
+  📝 Saved: 02_raw_topology.yaml
+
+[Stage 3] Optimization
+  📝 Saved: 03_optimized_topology.yaml
+  📉 Compression: 3 ops -> 3 ops
+
+[Stage 4] Code Generation
+  💾 Writing Final R Script to: dist/pipeline.R
+  📝 Saved: 04_generated_code.R
+
+[Stage 5] Target Verification (R Execution)
+  ⚙️  Executed: Rscript -> 05_target_verification.txt
+
+✅ V&V Cycle Complete.
+(venv) (base) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ pwd
+/home/jonny/git/legacy-etl-compiler
+(venv) (base) jonny@jonny-MS-7B98:~/git/legacy-etl-compiler$ 
