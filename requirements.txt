@@ -2,7 +2,7 @@
 -e ../etl-ir-core
 -e ../spec_generator
 -e ../etl_optimizer
--e ../etl-r-generator
+# TODO: -e ../etl-r-generator (needs to be cloned)
 
 # External libraries
 click==8.3.1

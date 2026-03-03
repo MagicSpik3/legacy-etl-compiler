@@ -25,7 +25,7 @@ class ArtifactManager:
 
     def save_text(self, filename: str, content: str):
         path = os.path.join(self.verification_dir, filename)
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(content)
         print(f"  📝 Saved: {filename}")
 
@@ -60,7 +60,7 @@ def run_command(cmd: List[str], log_file: str):
     except FileNotFoundError:
         output = f"Command: {' '.join(cmd)}\nStatus: ⚠️ Tool Not Found (Skipped)"
     
-    with open(log_file, "w") as f:
+    with open(log_file, "w", encoding="utf-8") as f:
         f.write(output)
     print(f"  ⚙️  Executed: {cmd[0]} -> {os.path.basename(log_file)}")
 
@@ -128,7 +128,7 @@ def compile_pipeline(manifest_path: str):
         final_r_path = os.path.join(dist_dir, "pipeline.R")
 
     print(f"  💾 Writing Final R Script to: {final_r_path}")
-    with open(final_r_path, "w") as f:
+    with open(final_r_path, "w", encoding="utf-8") as f:
         f.write(r_code)
 
 
@@ -138,7 +138,7 @@ def compile_pipeline(manifest_path: str):
     r_path = os.path.join(dist_dir, "pipeline.R") 
     
     artifacts.save_text(r_filename, r_code)
-    with open(r_path, "w") as f:
+    with open(r_path, "w", encoding="utf-8") as f:
         f.write(r_code)
 
     # --- STAGE 5: Target Verification ---
