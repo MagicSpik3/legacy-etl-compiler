@@ -65,7 +65,7 @@ def run_command(cmd: List[str], log_file: str):
     print(f"  ⚙️  Executed: {cmd[0]} -> {os.path.basename(log_file)}")
 
 
-def compile_pipeline(manifest_path: str):
+def compile_pipeline(manifest_path: str, pspp_cmd: str = "pspp", rscript_cmd: str = "Rscript"):
     # 0. Setup
     print(f"🚀 Starting V&V Compilation Cycle...")
     
@@ -90,7 +90,7 @@ def compile_pipeline(manifest_path: str):
     # --- STAGE 1: Source Verification (PSPP) ---
     print("\n[Stage 1] Source Verification")
     run_command(
-        ["pspp", sps_file], 
+        [pspp_cmd, sps_file], 
         os.path.join(artifacts.verification_dir, "01_source_verification.txt")
     )
 
@@ -144,7 +144,7 @@ def compile_pipeline(manifest_path: str):
     # --- STAGE 5: Target Verification ---
     print("\n[Stage 5] Target Verification (R Execution)")
     run_command(
-        ["Rscript", r_path], 
+        [rscript_cmd, r_path], 
         os.path.join(artifacts.verification_dir, "05_target_verification.txt")
     )
 
@@ -153,12 +153,14 @@ def compile_pipeline(manifest_path: str):
 # --- CLI ENTRY POINT ---
 @click.command()
 @click.option('--manifest', required=True, help='Path to manifest file (.yaml) or direct SPSS script (.sps)')
-def build(manifest):
+@click.option('--pspp-cmd', default='pspp', show_default=True, help='PSPP executable or wrapper command')
+@click.option('--rscript-cmd', default='Rscript', show_default=True, help='Rscript executable or wrapper command')
+def build(manifest, pspp_cmd, rscript_cmd):
     """
     Entry point for the compiler CLI.
     """
     try:
-        compile_pipeline(manifest)
+        compile_pipeline(manifest, pspp_cmd=pspp_cmd, rscript_cmd=rscript_cmd)
     except Exception as e:
         print(f"❌ Compiler Error: {e}")
         # Re-raise so Pytest sees the failure

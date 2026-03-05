@@ -1,0 +1,75 @@
+---
+title: "Legacy ETL Compiler"
+author: "Your Name / Data Science Team"
+date: "`r Sys.Date()`"
+format: revealjs
+execute:
+  echo: false
+  warning: false
+---
+
+## Overview
+
+- Purpose: migrate SPSS/PSPP logic into R pipelines
+- Verification & validation cycle
+
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Parser & Topology
+      A[SPSS/PSPP Script] --> B(GraphBuilder)
+      B --> C[Raw Topology YAML]
+    end
+    subgraph Optimizer
+      C --> D[Optimized Topology YAML]
+    end
+    subgraph Code Generation
+      D --> E[R Generator]
+      E --> F[Pipeline.R]
+    end
+    subgraph Verification
+      A --> G[PSPP]
+      F --> H[Rscript]
+    end
+```
+
+---
+
+## State Machine
+
+- Operations = nodes
+- States = datasets
+- Enables dependency checking & optimizations
+
+```mermaid
+flowchart TD
+    A[GET DATA] --> B[SORT CASES]
+    B --> C[COMPUTE age_group <- age/10]
+    C --> D[RECODE age_group]
+```
+
+---
+
+## Environment Considerations
+
+- Linux (Rscript + PSPP easily installed)
+- Windows: R via VS Code, PSPP absent -> configurable commands or skip
+
+---
+
+## Usage
+
+```bash
+python src/compiler.py --manifest demo/input/logic.sps \
+  --pspp-cmd "echo PSPP skipped" \
+  --rscript-cmd Rscript
+```
+
+---
+
+## Questions?
+
+*Detailed notes available in `docs/system_explanation.qmd`.*
