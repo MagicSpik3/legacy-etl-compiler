@@ -1,7 +1,7 @@
 ---
 title: "Legacy ETL Compiler: Architecture & Execution"
-author: "Your Name / Data Science Team"
-date: "`r Sys.Date()`"
+author: "Mark London / WAS RADAR"
+date: "2026-03-05"
 format: html
 execute: 
   echo: false
@@ -73,12 +73,41 @@ finite state automaton.
 
 Below is a simplified mermaid diagram showing how a short script might be represented:
 
-```mermaid
-flowchart TD
-    A[GET DATA] --> B[SORT CASES]
-    B --> C[COMPUTE age_group <- age/10]
-    C --> D[RECODE age_group]
+```{dot}
+digraph {
+
+  graph [
+    rankdir=LR
+    nodesep=1.0
+    ranksep=1.2
+    fontname="Helvetica"
+    fontsize=22
+  ]
+
+  node [
+    shape=box
+    style="rounded,filled"
+    fillcolor="#E8F1FA"
+    color="#1F4E79"
+    penwidth=2
+    fontname="Helvetica"
+    fontsize=20
+  ]
+
+  edge [
+    color="#1F4E79"
+    penwidth=3
+  ]
+
+  A [label="GET DATA"]
+  B [label="SORT CASES"]
+  C [label="COMPUTE\nage_group ← age / 10"]
+  D [label="RECODE\nage_group"]
+
+  A -> B -> C -> D
+}
 ```
+
 
 *Why a state machine?*
 

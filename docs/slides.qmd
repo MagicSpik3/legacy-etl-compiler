@@ -1,8 +1,17 @@
 ---
 title: "Legacy ETL Compiler"
-author: "Your Name / Data Science Team"
-date: "`r Sys.Date()`"
-format: revealjs
+author: "Mark London"
+date: "2026-03-05"
+
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    footer: "WAS RADAR"
+    chalkboard: false
+
+css: styles.css
+
 execute:
   echo: false
   warning: false
@@ -17,23 +26,87 @@ execute:
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph Parser & Topology
-      A[SPSS/PSPP Script] --> B(GraphBuilder)
-      B --> C[Raw Topology YAML]
-    end
-    subgraph Optimizer
-      C --> D[Optimized Topology YAML]
-    end
-    subgraph Code Generation
-      D --> E[R Generator]
-      E --> F[Pipeline.R]
-    end
-    subgraph Verification
-      A --> G[PSPP]
-      F --> H[Rscript]
-    end
+```{dot}
+digraph {
+
+  rankdir=LR;
+  bgcolor="transparent";
+  fontname="Helvetica";
+  fontsize=22;
+
+  node [
+    shape=box
+    style="rounded,filled"
+    fontname="Helvetica"
+    fontsize=20
+    fillcolor="#F8F9FA"
+    color="#1F4E79"
+    penwidth=2
+  ];
+
+  edge [
+    color="#1F4E79"
+    penwidth=3
+  ];
+
+  subgraph cluster_parser {
+    label="Parser & Topology";
+    fontsize=24;
+    style=filled;
+    fillcolor="#E8F1FA";
+    color="#1F4E79";
+    penwidth=2;
+
+    A [label="SPSS / PSPP Script"];
+    B [label="GraphBuilder"];
+    C [label="Raw Topology YAML"];
+
+    A -> B -> C;
+  }
+
+  subgraph cluster_optimizer {
+    label="Optimizer";
+    fontsize=24;
+    style=filled;
+    fillcolor="#EAF7EA";
+    color="#2E7D32";
+    penwidth=2;
+
+    D [label="Optimized Topology YAML"];
+
+    C -> D;
+  }
+
+  subgraph cluster_codegen {
+    label="Code Generation";
+    fontsize=24;
+    style=filled;
+    fillcolor="#FFF3E0";
+    color="#E65100";
+    penwidth=2;
+
+    E [label="R Generator"];
+    F [label="Pipeline.R"];
+
+    D -> E -> F;
+  }
+
+  subgraph cluster_verif {
+    label="Verification";
+    fontsize=24;
+    style=filled;
+    fillcolor="#F3E5F5";
+    color="#6A1B9A";
+    penwidth=2;
+
+    G [label="PSPP"];
+    H [label="Rscript"];
+
+    A -> G;
+    F -> H;
+  }
+
+}
 ```
 
 ---
@@ -44,11 +117,39 @@ flowchart LR
 - States = datasets
 - Enables dependency checking & optimizations
 
-```mermaid
-flowchart TD
-    A[GET DATA] --> B[SORT CASES]
-    B --> C[COMPUTE age_group <- age/10]
-    C --> D[RECODE age_group]
+```{dot}
+digraph {
+
+  graph [
+    rankdir=LR
+    nodesep=1.0
+    ranksep=1.2
+    fontname="Helvetica"
+    fontsize=22
+  ]
+
+  node [
+    shape=box
+    style="rounded,filled"
+    fillcolor="#E8F1FA"
+    color="#1F4E79"
+    penwidth=2
+    fontname="Helvetica"
+    fontsize=20
+  ]
+
+  edge [
+    color="#1F4E79"
+    penwidth=3
+  ]
+
+  A [label="GET DATA"]
+  B [label="SORT CASES"]
+  C [label="COMPUTE\nage_group ← age / 10"]
+  D [label="RECODE\nage_group"]
+
+  A -> B -> C -> D
+}
 ```
 
 ---
