@@ -8,6 +8,7 @@ format:
     theme: simple
     slide-number: true
     footer: "WAS RADAR"
+    logo: "WAS_RADAR.png"
     chalkboard: false
 
 css: styles.css
