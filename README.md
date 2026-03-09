@@ -1,5 +1,8 @@
 # Legacy ETL Compiler — README
 
+~/git_etl_old/SPSS-examplles/hello_world$ cd ~/git_etl_old/SPSS-examplles/hello_world/ && python ~/git/legacy-etl-compiler/src/compiler.py --manifest hello.sps --output-dir ~/git/legacy-etl-compiler/new_dist
+
+
 Summary
 -------
 This repository is the legacy ETL compiler orchestration and entry point for a multi-repo ETL compiler platform. The project ingests legacy SPSS/PSPP logic, converts it into a structured intermediate representation (IR), applies semantic optimization and validation passes, and finally generates idiomatic R (tidyverse) code. The compiler performs static checks (e.g. ghost-column detection) and produces verification artifacts at each stage so changes are auditable.
