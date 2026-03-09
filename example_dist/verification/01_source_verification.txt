@@ -1,9 +1,0 @@
-Command: pspp /tmp/pytest-of-jonny/pytest-2/test_pspp_compliance_12_sav_ro0/project/logic.sps
-Status: ❌ Failed
-
-=== OUTPUT ===
-error: An error occurred while opening `input.sav': No such file or directory.
-
-/tmp/pytest-of-jonny/pytest-2/test_pspp_compliance_12_sav_ro0/project/logic.
-sps:3: error: Stopping syntax file processing here to avoid a cascade of
-dependent command failures.

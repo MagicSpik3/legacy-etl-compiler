@@ -341,64 +341,124 @@ Mark London
 </div>
 </div>
 </section>
-<section id="state-machine" class="slide level2">
-<h2>State Machine</h2>
+<section id="what-is-the-legacy-etl-compiler-system" class="slide level2">
+<h2>What is the legacy-etl-compiler system?</h2>
 <ul>
-<li>Operations = nodes</li>
-<li>States = datasets</li>
-<li>Enables dependency checking &amp; optimizations</li>
+<li>Takes an existing SPSS/PSPP pipeline and converts it into another language (e.g., R).</li>
+<li>Uses an intermediate representation to make the compiler deterministic, testable, and optimizable.</li>
+<li>The key intermediate representation is a <strong>State Machine</strong> built from the original script.</li>
+</ul>
+</section>
+<section id="why-via-a-state-machine" class="slide level2">
+<h2>Why via a State Machine?</h2>
+<ul>
+<li>SPSS/PSPP scripts are <em>procedural</em> and <em>order-dependent</em>; changing the order can change results.</li>
+<li>A State Machine makes dependencies explicit and avoids hidden side effects.</li>
+<li>It lets us safely reorder, optimize, and verify transformations while preserving behavior.</li>
+</ul>
+</section>
+<section id="what-is-a-state-machine" class="slide level2">
+<h2>What is a State Machine?</h2>
+<ul>
+<li>A mathematical model of a program where each operation transitions the system to a new state.</li>
+<li>Instead of mutating variables, we create new versions (e.g., <code>X1</code>, <code>X2</code>, <code>X3</code>).</li>
+<li>Each step is a deterministic state transition, which makes reasoning about pipelines easier.</li>
+</ul>
+</section>
+<section id="order-matters-example" class="slide level2">
+<h2>Order Matters (Example)</h2>
+<p>Consider the following sequential logic:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href=""></a>X &lt;- 1</span>
+<span id="cb1-2"><a href=""></a>Y &lt;- X * 3</span>
+<span id="cb1-3"><a href=""></a>X &lt;- X + 1</span>
+<span id="cb1-4"><a href=""></a>Z &lt;- X * 7</span>
+<span id="cb1-5"><a href=""></a>output sum X, Y, Z</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If run in this order, the values are:</p>
+<ul>
+<li>X becomes 1</li>
+<li>Y becomes 3</li>
+<li>X becomes 2</li>
+<li>Z becomes 14</li>
+<li>sum = 19</li>
+</ul>
+<p>If the operations are reordered (e.g., computing Z before updating Y), the result changes.</p>
+</section>
+<section id="state-machine-view-same-logic" class="slide level2">
+<h2>State Machine View (Same Logic)</h2>
+<p>Each step creates a new state (immutable datasets):</p>
+<ul>
+<li><code>X1</code> is given the value 1.</li>
+<li><code>Y</code> is computed from <code>X1</code> (3).</li>
+<li><code>X2</code> is updated from <code>X1</code> (2).</li>
+<li><code>Z</code> is computed from <code>X2</code> (14).</li>
+<li>Output is the sum of <code>X2</code>, <code>Y</code>, and <code>Z</code> (19).</li>
 </ul>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class=""><p></p>
 <div>
-<svg width="960" height="480" viewbox="0.00 0.00 850.28 64.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<svg width="960" height="480" viewbox="0.00 0.00 579.44 64.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 60)">
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-60 846.28,-60 846.28,4 -4,4"></polygon>
-<!-- A -->
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-60 575.44,-60 575.44,4 -4,4"></polygon>
+<!-- S0 -->
 <g id="node1" class="node">
-<title>A</title>
-<path fill="#e8f1fa" stroke="#1f4e79" stroke-width="2" d="M104.01,-46C104.01,-46 12,-46 12,-46 6,-46 0,-40 0,-34 0,-34 0,-22 0,-22 0,-16 6,-10 12,-10 12,-10 104.01,-10 104.01,-10 110.01,-10 116.01,-16 116.01,-22 116.01,-22 116.01,-34 116.01,-34 116.01,-40 110.01,-46 104.01,-46"></path>
-<text text-anchor="middle" x="58" y="-22" font-family="Helvetica,sans-Serif" font-size="20.00">GET DATA</text>
+<title>S0</title>
+<path fill="none" stroke="#1f4e79" d="M67.55,-56C67.55,-56 11.81,-56 11.81,-56 5.81,-56 -0.19,-50 -0.19,-44 -0.19,-44 -0.19,-12 -0.19,-12 -0.19,-6 5.81,0 11.81,0 11.81,0 67.55,0 67.55,0 73.55,0 79.55,-6 79.55,-12 79.55,-12 79.55,-44 79.55,-44 79.55,-50 73.55,-56 67.55,-56"></path>
+<text text-anchor="middle" x="39.68" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₀</text>
+<text text-anchor="middle" x="39.68" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X=1</text>
 </g>
-<!-- B -->
+<!-- S1 -->
 <g id="node2" class="node">
-<title>B</title>
-<path fill="#e8f1fa" stroke="#1f4e79" stroke-width="2" d="M334.88,-46C334.88,-46 214.05,-46 214.05,-46 208.05,-46 202.05,-40 202.05,-34 202.05,-34 202.05,-22 202.05,-22 202.05,-16 208.05,-10 214.05,-10 214.05,-10 334.88,-10 334.88,-10 340.88,-10 346.88,-16 346.88,-22 346.88,-22 346.88,-34 346.88,-34 346.88,-40 340.88,-46 334.88,-46"></path>
-<text text-anchor="middle" x="274.47" y="-22" font-family="Helvetica,sans-Serif" font-size="20.00">SORT CASES</text>
+<title>S1</title>
+<path fill="none" stroke="#1f4e79" d="M182.92,-56C182.92,-56 127.18,-56 127.18,-56 121.18,-56 115.18,-50 115.18,-44 115.18,-44 115.18,-12 115.18,-12 115.18,-6 121.18,0 127.18,0 127.18,0 182.92,0 182.92,0 188.92,0 194.92,-6 194.92,-12 194.92,-12 194.92,-44 194.92,-44 194.92,-50 188.92,-56 182.92,-56"></path>
+<text text-anchor="middle" x="155.05" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₁</text>
+<text text-anchor="middle" x="155.05" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Y=3</text>
 </g>
-<!-- A&#45;&gt;B -->
+<!-- S0&#45;&gt;S1 -->
 <g id="edge1" class="edge">
-<title>A-&gt;B</title>
-<path fill="none" stroke="#1f4e79" stroke-width="3" d="M116.2,-28C139.32,-28 166.44,-28 191.59,-28"></path>
-<polygon fill="#1f4e79" stroke="#1f4e79" stroke-width="3" points="191.85,-31.5 201.85,-28 191.85,-24.5 191.85,-31.5"></polygon>
+<title>S0-&gt;S1</title>
+<path fill="none" stroke="black" d="M79.38,-28C87.59,-28 96.36,-28 104.9,-28"></path>
+<polygon fill="black" stroke="black" points="105.15,-31.5 115.15,-28 105.15,-24.5 105.15,-31.5"></polygon>
 </g>
-<!-- C -->
+<!-- S2 -->
 <g id="node3" class="node">
-<title>C</title>
-<path fill="#e8f1fa" stroke="#1f4e79" stroke-width="2" d="M632.5,-56C632.5,-56 445.07,-56 445.07,-56 439.07,-56 433.07,-50 433.07,-44 433.07,-44 433.07,-12 433.07,-12 433.07,-6 439.07,0 445.07,0 445.07,0 632.5,0 632.5,0 638.5,0 644.5,-6 644.5,-12 644.5,-12 644.5,-44 644.5,-44 644.5,-50 638.5,-56 632.5,-56"></path>
-<text text-anchor="middle" x="538.78" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">COMPUTE</text>
-<text text-anchor="middle" x="538.78" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">age_group ← age / 10</text>
+<title>S2</title>
+<path fill="none" stroke="#1f4e79" d="M298.29,-56C298.29,-56 242.55,-56 242.55,-56 236.55,-56 230.55,-50 230.55,-44 230.55,-44 230.55,-12 230.55,-12 230.55,-6 236.55,0 242.55,0 242.55,0 298.29,0 298.29,0 304.29,0 310.29,-6 310.29,-12 310.29,-12 310.29,-44 310.29,-44 310.29,-50 304.29,-56 298.29,-56"></path>
+<text text-anchor="middle" x="270.42" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₂</text>
+<text text-anchor="middle" x="270.42" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X=2</text>
 </g>
-<!-- B&#45;&gt;C -->
+<!-- S1&#45;&gt;S2 -->
 <g id="edge2" class="edge">
-<title>B-&gt;C</title>
-<path fill="none" stroke="#1f4e79" stroke-width="3" d="M347.15,-28C370.45,-28 396.93,-28 422.58,-28"></path>
-<polygon fill="#1f4e79" stroke="#1f4e79" stroke-width="3" points="422.74,-31.5 432.74,-28 422.74,-24.5 422.74,-31.5"></polygon>
+<title>S1-&gt;S2</title>
+<path fill="none" stroke="black" d="M194.75,-28C202.96,-28 211.73,-28 220.27,-28"></path>
+<polygon fill="black" stroke="black" points="220.51,-31.5 230.51,-28 220.51,-24.5 220.51,-31.5"></polygon>
 </g>
-<!-- D -->
+<!-- S3 -->
 <g id="node4" class="node">
-<title>D</title>
-<path fill="#e8f1fa" stroke="#1f4e79" stroke-width="2" d="M830.11,-56C830.11,-56 742.82,-56 742.82,-56 736.82,-56 730.82,-50 730.82,-44 730.82,-44 730.82,-12 730.82,-12 730.82,-6 736.82,0 742.82,0 742.82,0 830.11,0 830.11,0 836.11,0 842.11,-6 842.11,-12 842.11,-12 842.11,-44 842.11,-44 842.11,-50 836.11,-56 830.11,-56"></path>
-<text text-anchor="middle" x="786.46" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">RECODE</text>
-<text text-anchor="middle" x="786.46" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">age_group</text>
+<title>S3</title>
+<path fill="none" stroke="#1f4e79" d="M413.66,-56C413.66,-56 357.92,-56 357.92,-56 351.92,-56 345.92,-50 345.92,-44 345.92,-44 345.92,-12 345.92,-12 345.92,-6 351.92,0 357.92,0 357.92,0 413.66,0 413.66,0 419.66,0 425.66,-6 425.66,-12 425.66,-12 425.66,-44 425.66,-44 425.66,-50 419.66,-56 413.66,-56"></path>
+<text text-anchor="middle" x="385.79" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₃</text>
+<text text-anchor="middle" x="385.79" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Z=14</text>
 </g>
-<!-- C&#45;&gt;D -->
+<!-- S2&#45;&gt;S3 -->
 <g id="edge3" class="edge">
-<title>C-&gt;D</title>
-<path fill="none" stroke="#1f4e79" stroke-width="3" d="M644.68,-28C670.47,-28 697.34,-28 720.61,-28"></path>
-<polygon fill="#1f4e79" stroke="#1f4e79" stroke-width="3" points="720.68,-31.5 730.68,-28 720.68,-24.5 720.68,-31.5"></polygon>
+<title>S2-&gt;S3</title>
+<path fill="none" stroke="black" d="M310.12,-28C318.33,-28 327.1,-28 335.64,-28"></path>
+<polygon fill="black" stroke="black" points="335.88,-31.5 345.88,-28 335.88,-24.5 335.88,-31.5"></polygon>
+</g>
+<!-- S4 -->
+<g id="node5" class="node">
+<title>S4</title>
+<path fill="none" stroke="#1f4e79" d="M559.42,-56C559.42,-56 473.49,-56 473.49,-56 467.49,-56 461.49,-50 461.49,-44 461.49,-44 461.49,-12 461.49,-12 461.49,-6 467.49,0 473.49,0 473.49,0 559.42,0 559.42,0 565.42,0 571.42,-6 571.42,-12 571.42,-12 571.42,-44 571.42,-44 571.42,-50 565.42,-56 559.42,-56"></path>
+<text text-anchor="middle" x="516.46" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₄</text>
+<text text-anchor="middle" x="516.46" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Output=19</text>
+</g>
+<!-- S3&#45;&gt;S4 -->
+<g id="edge4" class="edge">
+<title>S3-&gt;S4</title>
+<path fill="none" stroke="black" d="M425.75,-28C433.83,-28 442.54,-28 451.26,-28"></path>
+<polygon fill="black" stroke="black" points="451.45,-31.5 461.45,-28 451.45,-24.5 451.45,-31.5"></polygon>
 </g>
 </g>
 </svg>
@@ -407,6 +467,14 @@ Mark London
 </div>
 </div>
 </div>
+</section>
+<section id="state-machine-compiler-level" class="slide level2">
+<h2>State Machine (Compiler-Level)</h2>
+<ul>
+<li>Operations become nodes in a directed acyclic graph.</li>
+<li>States are the intermediate datasets produced by each node.</li>
+<li>The compiler can then optimize, reorder, and validate these transformations.</li>
+</ul>
 </section>
 <section id="environment-considerations" class="slide level2">
 <h2>Environment Considerations</h2>
@@ -417,11 +485,28 @@ Mark London
 </section>
 <section id="usage" class="slide level2">
 <h2>Usage</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href=""></a><span class="ex">python</span> src/compiler.py <span class="at">--manifest</span> demo/input/logic.sps <span class="dt">\</span></span>
-<span id="cb1-2"><a href=""></a>  <span class="at">--pspp-cmd</span> <span class="st">"echo PSPP skipped"</span> <span class="dt">\</span></span>
-<span id="cb1-3"><a href=""></a>  <span class="at">--rscript-cmd</span> Rscript</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href=""></a><span class="ex">python</span> src/compiler.py <span class="at">--manifest</span> demo/input/logic.sps <span class="dt">\</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="at">--pspp-cmd</span> <span class="st">"echo PSPP skipped"</span> <span class="dt">\</span></span>
+<span id="cb2-3"><a href=""></a>  <span class="at">--rscript-cmd</span> Rscript</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="questions" class="slide level2">
+<h2>Questions?</h2>
+<p><em>Detailed notes available in <code>docs/system_explanation.qmd</code>.</em></p>
+</section>
+<section id="environment-considerations-1" class="slide level2">
+<h2>Environment Considerations</h2>
+<ul>
+<li>Linux (Rscript + PSPP easily installed)</li>
+<li>Windows: R via VS Code, PSPP absent -&gt; configurable commands or skip</li>
+</ul>
+</section>
+<section id="usage-1" class="slide level2">
+<h2>Usage</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="ex">python</span> src/compiler.py <span class="at">--manifest</span> demo/input/logic.sps <span class="dt">\</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="at">--pspp-cmd</span> <span class="st">"echo PSPP skipped"</span> <span class="dt">\</span></span>
+<span id="cb3-3"><a href=""></a>  <span class="at">--rscript-cmd</span> Rscript</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="questions-1" class="slide level2">
 <h2>Questions?</h2>
 <p><em>Detailed notes available in <code>docs/system_explanation.qmd</code>.</em></p>
 

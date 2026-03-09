@@ -112,46 +112,109 @@ digraph {
 
 ---
 
-## State Machine
+## What is the legacy-etl-compiler system?
 
-- Operations = nodes
-- States = datasets
-- Enables dependency checking & optimizations
+- Takes an existing SPSS/PSPP pipeline and converts it into another language (e.g., R).
+- Uses an intermediate representation to make the compiler deterministic, testable, and optimizable.
+- The key intermediate representation is a **State Machine** built from the original script.
+
+---
+
+## Why via a State Machine?
+
+- SPSS/PSPP scripts are *procedural* and *order-dependent*; changing the order can change results.
+- A State Machine makes dependencies explicit and avoids hidden side effects.
+- It lets us safely reorder, optimize, and verify transformations while preserving behavior.
+
+---
+
+## What is a State Machine?
+
+- A mathematical model of a program where each operation transitions the system to a new state.
+- Instead of mutating variables, we create new versions (e.g., `X1`, `X2`, `X3`).
+- Each step is a deterministic state transition, which makes reasoning about pipelines easier.
+
+---
+
+## Order Matters (Example)
+
+Consider the following sequential logic:
+
+```text
+X <- 1
+Y <- X * 3
+X <- X + 1
+Z <- X * 7
+output sum X, Y, Z
+```
+
+If run in this order, the values are:
+
+- X becomes 1
+- Y becomes 3
+- X becomes 2
+- Z becomes 14
+- sum = 19
+
+If the operations are reordered (e.g., computing Z before updating Y), the result changes.
+
+---
+
+## State Machine View (Same Logic)
+
+Each step creates a new state (immutable datasets):
+
+- `X1` is given the value 1.
+- `Y` is computed from `X1` (3).
+- `X2` is updated from `X1` (2).
+- `Z` is computed from `X2` (14).
+- Output is the sum of `X2`, `Y`, and `Z` (19).
 
 ```{dot}
 digraph {
+  rankdir=LR;
+  node [shape=box, style=rounded, fillcolor="#E8F1FA", color="#1F4E79", fontname="Helvetica", fontsize=20];
 
-  graph [
-    rankdir=LR
-    nodesep=1.0
-    ranksep=1.2
-    fontname="Helvetica"
-    fontsize=22
-  ]
+  S0 [label="State₀\nX=1"];
+  S1 [label="State₁\nY=3"];
+  S2 [label="State₂\nX=2"];
+  S3 [label="State₃\nZ=14"];
+  S4 [label="State₄\nOutput=19"];
 
-  node [
-    shape=box
-    style="rounded,filled"
-    fillcolor="#E8F1FA"
-    color="#1F4E79"
-    penwidth=2
-    fontname="Helvetica"
-    fontsize=20
-  ]
-
-  edge [
-    color="#1F4E79"
-    penwidth=3
-  ]
-
-  A [label="GET DATA"]
-  B [label="SORT CASES"]
-  C [label="COMPUTE\nage_group ← age / 10"]
-  D [label="RECODE\nage_group"]
-
-  A -> B -> C -> D
+  S0 -> S1 -> S2 -> S3 -> S4;
 }
 ```
+
+---
+
+## State Machine (Compiler-Level)
+
+- Operations become nodes in a directed acyclic graph.
+- States are the intermediate datasets produced by each node.
+- The compiler can then optimize, reorder, and validate these transformations.
+
+---
+
+## Environment Considerations
+
+- Linux (Rscript + PSPP easily installed)
+- Windows: R via VS Code, PSPP absent -> configurable commands or skip
+
+---
+
+## Usage
+
+```bash
+python src/compiler.py --manifest demo/input/logic.sps \
+  --pspp-cmd "echo PSPP skipped" \
+  --rscript-cmd Rscript
+```
+
+---
+
+## Questions?
+
+*Detailed notes available in `docs/system_explanation.qmd`.*
 
 ---
 
