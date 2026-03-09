@@ -1,0 +1,2 @@
+Command: pspp ..\SPSS-examplles\WAS_example\recreate_pipeline.sps
+Status: ⚠️ Tool Not Found (Skipped)

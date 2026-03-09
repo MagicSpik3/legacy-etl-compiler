@@ -1,0 +1,173 @@
+# Pipeline Topology: 29 Operations
+----------------------------------------
+Operation: op_001_load
+  Type:    LOAD_CSV
+  Inputs:  []
+  Outputs: ['source_input_template.csv']
+  Params:  {'filename': 'input_template.csv', 'format': 'TXT', 'schema': ['VType1', 'VType2', 'VType3', 'VCarN', 'VoTyp1', 'VoTyp2', 'VoTyp3', 'VoTyp4', 'VoTyp5'], 'skip_rows': 1}
+
+Operation: op_002_exec
+  Type:    MATERIALIZE
+  Inputs:  ['source_input_template.csv']
+  Outputs: ['ds_001_materialized']
+
+Operation: op_003_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_001_materialized']
+  Outputs: ['ds_002_derived']
+  Params:  {'target': 'VType_Binary1', 'expression': '0'}
+
+Operation: op_004_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_002_derived']
+  Outputs: ['ds_003_generic']
+  Params:  {'command': 'DO IF', 'raw_content': '( VType1 = 1 OR VType2 = 1 OR VType3 = 1 )'}
+
+Operation: op_005_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_003_generic']
+  Outputs: ['ds_004_derived']
+  Params:  {'target': 'VType_Binary1', 'expression': '1'}
+
+Operation: op_006_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_004_derived']
+  Outputs: ['ds_005_generic']
+  Params:  {'command': 'ELSE', 'raw_content': 'IF ( VCarN = - 8 OR VType1 = - 8 )'}
+
+Operation: op_007_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_005_generic']
+  Outputs: ['ds_006_derived']
+  Params:  {'target': 'VType_Binary1', 'expression': '- 8'}
+
+Operation: op_008_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_006_derived']
+  Outputs: ['ds_007_generic']
+  Params:  {'command': 'END IF', 'raw_content': ''}
+
+Operation: op_009_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_007_generic']
+  Outputs: ['ds_008_derived']
+  Params:  {'target': 'VType_Binary2', 'expression': '0'}
+
+Operation: op_010_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_008_derived']
+  Outputs: ['ds_009_generic']
+  Params:  {'command': 'DO IF', 'raw_content': '( VType1 = 2 OR VType2 = 2 OR VType3 = 2 )'}
+
+Operation: op_011_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_009_generic']
+  Outputs: ['ds_010_derived']
+  Params:  {'target': 'VType_Binary2', 'expression': '1'}
+
+Operation: op_012_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_010_derived']
+  Outputs: ['ds_011_generic']
+  Params:  {'command': 'ELSE', 'raw_content': 'IF ( VCarN = - 8 OR VType1 = - 8 )'}
+
+Operation: op_013_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_011_generic']
+  Outputs: ['ds_012_derived']
+  Params:  {'target': 'VType_Binary2', 'expression': '- 8'}
+
+Operation: op_014_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_012_derived']
+  Outputs: ['ds_013_generic']
+  Params:  {'command': 'END IF', 'raw_content': ''}
+
+Operation: op_015_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_013_generic']
+  Outputs: ['ds_014_derived']
+  Params:  {'target': 'VType_Binary3', 'expression': '0'}
+
+Operation: op_016_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_014_derived']
+  Outputs: ['ds_015_generic']
+  Params:  {'command': 'DO IF', 'raw_content': '( VType1 = 3 OR VType2 = 3 OR VType3 = 3 )'}
+
+Operation: op_017_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_015_generic']
+  Outputs: ['ds_016_derived']
+  Params:  {'target': 'VType_Binary3', 'expression': '1'}
+
+Operation: op_018_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_016_derived']
+  Outputs: ['ds_017_generic']
+  Params:  {'command': 'ELSE', 'raw_content': 'IF ( VCarN = - 8 OR VType1 = - 8 )'}
+
+Operation: op_019_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_017_generic']
+  Outputs: ['ds_018_derived']
+  Params:  {'target': 'VType_Binary3', 'expression': '- 8'}
+
+Operation: op_020_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_018_derived']
+  Outputs: ['ds_019_generic']
+  Params:  {'command': 'END IF', 'raw_content': ''}
+
+Operation: op_021_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_019_generic']
+  Outputs: ['ds_020_derived']
+  Params:  {'target': 'VoTyp_Binary1', 'expression': '0'}
+
+Operation: op_022_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_020_derived']
+  Outputs: ['ds_021_generic']
+  Params:  {'command': 'DO IF', 'raw_content': '( VoTyp1 = 1 OR VoTyp2 = 1 OR VoTyp3 = 1 OR VoTyp4 = 1 OR VoTyp5 = 1 )'}
+
+Operation: op_023_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_021_generic']
+  Outputs: ['ds_022_derived']
+  Params:  {'target': 'VoTyp_Binary1', 'expression': '1'}
+
+Operation: op_024_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_022_derived']
+  Outputs: ['ds_023_generic']
+  Params:  {'command': 'ELSE', 'raw_content': 'IF ( VoTyp1 = - 8 )'}
+
+Operation: op_025_compute
+  Type:    COMPUTE_COLUMNS
+  Inputs:  ['ds_023_generic']
+  Outputs: ['ds_024_derived']
+  Params:  {'target': 'VoTyp_Binary1', 'expression': '- 8'}
+
+Operation: op_026_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_024_derived']
+  Outputs: ['ds_025_generic']
+  Params:  {'command': 'END IF', 'raw_content': ''}
+
+Operation: op_027_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_025_generic']
+  Outputs: ['ds_026_generic']
+  Params:  {'command': 'VARIABLE', 'raw_content': "LABELS VType_Binary1 'Has car' VType_Binary2 'Has van' VType_Binary3 'Has motorbike' VoTyp_Binary1 'Has caravan/trailer'"}
+
+Operation: op_028_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_026_generic']
+  Outputs: ['ds_027_generic']
+  Params:  {'command': 'VALUE', 'raw_content': 'LABELS VType_Binary1 VType_Binary2 VType_Binary3 VoTyp_Binary1 0 \'No\' 1 \'Yes\' - 8 "Don\'t know/Refusal" - 9 \'Not asked/Not routed\''}
+
+Operation: op_029_exec
+  Type:    MATERIALIZE
+  Inputs:  ['ds_027_generic']
+  Outputs: ['ds_028_materialized']

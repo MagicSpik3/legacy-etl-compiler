@@ -1,0 +1,35 @@
+# Pipeline Topology: 6 Operations
+----------------------------------------
+Operation: op_001_load
+  Type:    LOAD_CSV
+  Inputs:  []
+  Outputs: ['source_input_template.csv']
+  Params:  {'filename': 'input_template.csv', 'format': 'TXT', 'schema': ['VType1', 'VType2', 'VType3', 'VCarN', 'VoTyp1', 'VoTyp2', 'VoTyp3', 'VoTyp4', 'VoTyp5'], 'skip_rows': 1}
+
+Operation: op_002_exec
+  Type:    MATERIALIZE
+  Inputs:  ['source_input_template.csv']
+  Outputs: ['ds_001_materialized']
+
+Operation: batch_op_003_compute
+  Type:    BATCH_COMPUTE
+  Inputs:  ['ds_001_materialized']
+  Outputs: ['ds_024_derived']
+  Params:  {'computes': [{'target': 'VType_Binary1', 'expression': '0'}, {'target': 'VType_Binary1', 'expression': 'VType_Binary1 = if_else(VType1 = 1 OR VType2 = 1 OR VType3 = 1, 1, VType_Binary1)'}, {'target': 'VType_Binary1', 'expression': 'VType_Binary1 = if_else(!(VType1 = 1 OR VType2 = 1 OR VType3 = 1), - 8, VType_Binary1)'}, {'target': 'VType_Binary2', 'expression': '0'}, {'target': 'VType_Binary2', 'expression': 'VType_Binary2 = if_else(VType1 = 2 OR VType2 = 2 OR VType3 = 2, 1, VType_Binary2)'}, {'target': 'VType_Binary2', 'expression': 'VType_Binary2 = if_else(!(VType1 = 2 OR VType2 = 2 OR VType3 = 2), - 8, VType_Binary2)'}, {'target': 'VType_Binary3', 'expression': '0'}, {'target': 'VType_Binary3', 'expression': 'VType_Binary3 = if_else(VType1 = 3 OR VType2 = 3 OR VType3 = 3, 1, VType_Binary3)'}, {'target': 'VType_Binary3', 'expression': 'VType_Binary3 = if_else(!(VType1 = 3 OR VType2 = 3 OR VType3 = 3), - 8, VType_Binary3)'}, {'target': 'VoTyp_Binary1', 'expression': '0'}, {'target': 'VoTyp_Binary1', 'expression': 'VoTyp_Binary1 = if_else(VoTyp1 = 1 OR VoTyp2 = 1 OR VoTyp3 = 1 OR VoTyp4 = 1 OR VoTyp5 = 1, 1, VoTyp_Binary1)'}, {'target': 'VoTyp_Binary1', 'expression': 'VoTyp_Binary1 = if_else(!(VoTyp1 = 1 OR VoTyp2 = 1 OR VoTyp3 = 1 OR VoTyp4 = 1 OR VoTyp5 = 1), - 8, VoTyp_Binary1)'}]}
+
+Operation: op_027_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_024_derived']
+  Outputs: ['ds_026_generic']
+  Params:  {'command': 'VARIABLE', 'raw_content': "LABELS VType_Binary1 'Has car' VType_Binary2 'Has van' VType_Binary3 'Has motorbike' VoTyp_Binary1 'Has caravan/trailer'"}
+
+Operation: op_028_generic
+  Type:    GENERIC_TRANSFORM
+  Inputs:  ['ds_026_generic']
+  Outputs: ['ds_027_generic']
+  Params:  {'command': 'VALUE', 'raw_content': 'LABELS VType_Binary1 VType_Binary2 VType_Binary3 VoTyp_Binary1 0 \'No\' 1 \'Yes\' - 8 "Don\'t know/Refusal" - 9 \'Not asked/Not routed\''}
+
+Operation: op_029_exec
+  Type:    MATERIALIZE
+  Inputs:  ['ds_027_generic']
+  Outputs: ['ds_028_materialized']

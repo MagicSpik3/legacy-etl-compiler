@@ -1,0 +1,2 @@
+Command: pspp ..\SPSS-examplles\real_legacy_project\example_pspp_final.sps
+Status: ⚠️ Tool Not Found (Skipped)
