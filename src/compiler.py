@@ -65,7 +65,7 @@ def run_command(cmd: List[str], log_file: str):
     print(f"  ⚙️  Executed: {cmd[0]} -> {os.path.basename(log_file)}")
 
 
-def compile_pipeline(manifest_path: str, pspp_cmd: str = "pspp", rscript_cmd: str = "Rscript"):
+def compile_pipeline(manifest_path: str, pspp_cmd: str = "pspp", rscript_cmd: str = "Rscript", output_dir: str = "dist"):
     # 0. Setup
     print(f"🚀 Starting V&V Compilation Cycle...")
     
@@ -81,7 +81,7 @@ def compile_pipeline(manifest_path: str, pspp_cmd: str = "pspp", rscript_cmd: st
         # EXTRACT THE OUTPUT PATH
         output_path = config.get("output", {}).get("path") 
 
-    dist_dir = "dist"
+    dist_dir = output_dir
     artifacts = ArtifactManager(dist_dir)
     
     with open(sps_file, "r") as f:
@@ -153,14 +153,15 @@ def compile_pipeline(manifest_path: str, pspp_cmd: str = "pspp", rscript_cmd: st
 # --- CLI ENTRY POINT ---
 @click.command()
 @click.option('--manifest', required=True, help='Path to manifest file (.yaml) or direct SPSS script (.sps)')
+@click.option('--output-dir', default='dist', show_default=True, help='Output directory for generated files')
 @click.option('--pspp-cmd', default='pspp', show_default=True, help='PSPP executable or wrapper command')
 @click.option('--rscript-cmd', default='Rscript', show_default=True, help='Rscript executable or wrapper command')
-def build(manifest, pspp_cmd, rscript_cmd):
+def build(manifest, output_dir, pspp_cmd, rscript_cmd):
     """
     Entry point for the compiler CLI.
     """
     try:
-        compile_pipeline(manifest, pspp_cmd=pspp_cmd, rscript_cmd=rscript_cmd)
+        compile_pipeline(manifest, pspp_cmd=pspp_cmd, rscript_cmd=rscript_cmd, output_dir=output_dir)
     except Exception as e:
         print(f"❌ Compiler Error: {e}")
         # Re-raise so Pytest sees the failure

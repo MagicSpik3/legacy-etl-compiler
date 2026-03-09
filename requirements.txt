@@ -3,6 +3,7 @@
 -e ../spec_generator
 -e ../etl_optimizer
 # TODO: -e ../etl-r-generator (needs to be cloned)
+-e ../etl-r-generator
 
 # External libraries
 click==8.3.1
