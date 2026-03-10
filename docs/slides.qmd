@@ -119,15 +119,15 @@ digraph {
 
 * Takes an existing SPSS pipeline and converts it into another language (e.g., R).
 * Uses an intermediate representation to make the compiler deterministic, testable, and optimisable.
-* The key intermediate representation is a **State Machine** built from the original script.
+* The key intermediate representation is a State Machine built from the original script.
 
 ---
 
 ## Why not translate directly to R?
 
-* **The Syntax Trap:** Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
-* **Hidden Side Effects:** SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
-* **Brittle Output:** Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.
+* The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
+* Hidden Side Effects: SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
+* Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.
 
 ---
 
@@ -366,4 +366,157 @@ chr (1): name
 dbl (1): id
 ```
 
+---
+
+## Supported Features { .appendix-slide }
+
+```text
+Data Loading
+- GET DATA /TYPE=TXT /FILE='filename.csv' /DELIMITERS=','
+  - Loads CSV files with comma delimiters - Generates `read_csv()` in R
+
+- GET DATA /TYPE=SAV /FILE='filename.sav'
+  - Loads SPSS .sav files - Generates `read_sav()` in R
+
+Data Manipulation
+- SORT CASES BY variable(s) (A/D)
+- COMPUTE target = expression
+  - Basic arithmetic and logical expressions
+  - Variable assignments
+
+- IF (condition) target = expression
+  - Generates `mutate()` with `if_else()` in R
+
+- RECODE source_vars (...) INTO target_vars
+  - Variable recoding with mapping rules
+
 ```
+---
+
+## Cont { .appendix-slide }
+```text
+Data Filtering
+- SELECT IF (condition)
+  - Row filtering based on conditions
+  - Generates `filter()` in R
+
+Data Joining
+- MATCH FILES /FILE=* /TABLE='file' /BY key
+  - Inner and left joins
+  - Multiple key variables
+  - Generates `inner_join()` and `left_join()` in R
+
+Aggregation
+- AGGREGATE /BREAK=group_vars /target=func(source)
+  - Grouped aggregations
+  - Functions: MEAN, SUM, MAX, MIN
+  - Generates `group_by()` and `summarise()` in R
+
+Schema Definition
+- DATA LIST FREE / var1 (F8.0) var2 (A10)
+  - Variable type definitions
+  - Basic format specifications
+  - Injected into IR schema
+
+Data Saving
+- SAVE OUTFILE='filename.sav'
+  - Saves to SPSS .sav format
+  - Generates `write_sav()` in R
+
+- SAVE OUTFILE='filename.csv'
+  - Saves to CSV format
+  - Generates `write_csv()` in R
+```
+---
+
+## Supported Functions and Operators { .appendix-slide }
+
+```text
+Mathematical Functions
+- TRUNC() → floor()
+- RND() → round()
+- ABS() → abs()
+- MOD(a,b) → a %% b
+
+String Functions
+- CONCAT() → paste0()
+- PASTE() → paste0()
+- STR_C() → str_c()
+
+Statistical Functions
+- MEAN() → mean()
+- LAG() → lag()
+
+Logical Operators
+- AND → &
+- OR → |
+- <> → !=
+- = → == (in expressions)
+
+Conditional Functions
+- IF_ELSE() → if_else()
+- CASE_WHEN() → case_when()
+- NA_IF() → na_if()
+```
+---
+
+
+## Cont { .appendix-slide }
+```text
+Date Functions
+- DATE.MDY(m,d,y) → make_date(year=y, month=m, day=d)
+
+Special Values
+- $SYSMIS → NA
+
+Partially Supported Features
+
+Conditional Logic
+- DO IF / END IF blocks
+  - Basic structure recognized
+  - May have formatting inconsistencies in generated conditions
+
+Generic Commands
+- Unknown SPSS commands parsed as generic nodes
+- Logged as warnings in generated R code
+- No functional implementation
+```
+---
+
+
+## Unsupported Features { .appendix-slide }
+```text
+Data Input
+- Complex DATA LIST formats beyond FREE
+- BEGIN DATA / END DATA inline data blocks (skipped)
+- Other file types beyond TXT and SAV
+- Complex delimiter specifications
+
+Advanced Functions
+- Most SPSS-specific functions not in the registry
+- Advanced string manipulation beyond CONCAT
+- Complex date/time operations beyond MDY
+- Missing value patterns beyond $SYSMIS
+
+Control Flow
+- Complex nested IF/DO IF structures
+- LOOP/END LOOP constructs
+- Macro definitions and calls
+
+Output
+- Complex SAVE options and formats
+- EXPORT commands
+- PRINT/WRITE statements
+
+Statistical Procedures
+- All statistical analysis commands (DESCRIPTIVES, FREQUENCIES, etc.)
+- Parsed as generic nodes with warnings
+
+File Management
+- FILE HANDLE definitions
+- Complex file path handling
+- Temporary file management
+```
+---
+
+

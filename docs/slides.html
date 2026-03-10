@@ -352,15 +352,15 @@ Mark London
 <ul>
 <li>Takes an existing SPSS pipeline and converts it into another language (e.g., R).</li>
 <li>Uses an intermediate representation to make the compiler deterministic, testable, and optimisable.</li>
-<li>The key intermediate representation is a <strong>State Machine</strong> built from the original script.</li>
+<li>The key intermediate representation is a State Machine built from the original script.</li>
 </ul>
 </section>
 <section id="why-not-translate-directly-to-r" class="slide level2">
 <h2>Why not translate directly to R?</h2>
 <ul>
-<li><strong>The Syntax Trap:</strong> Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.</li>
-<li><strong>Hidden Side Effects:</strong> SPSS is highly procedural and relies on a mutable “active dataset.” R leans towards functional dataframe manipulation.</li>
-<li><strong>Brittle Output:</strong> Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.</li>
+<li>The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.</li>
+<li>Hidden Side Effects: SPSS is highly procedural and relies on a mutable “active dataset.” R leans towards functional dataframe manipulation.</li>
+<li>Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.</li>
 </ul>
 </section>
 <section id="why-via-a-state-machine" class="slide level2">
@@ -582,7 +582,145 @@ Mark London
 <span id="cb8-7"><a href=""></a>Delimiter: ","</span>
 <span id="cb8-8"><a href=""></a>chr (1): name</span>
 <span id="cb8-9"><a href=""></a>dbl (1): id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>```</p>
+</section>
+<section id="supported-features" class="slide level2 appendix-slide">
+<h2>Supported Features</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb9-1"><a href=""></a>Data Loading</span>
+<span id="cb9-2"><a href=""></a>- GET DATA /TYPE=TXT /FILE='filename.csv' /DELIMITERS=','</span>
+<span id="cb9-3"><a href=""></a>  - Loads CSV files with comma delimiters - Generates `read_csv()` in R</span>
+<span id="cb9-4"><a href=""></a></span>
+<span id="cb9-5"><a href=""></a>- GET DATA /TYPE=SAV /FILE='filename.sav'</span>
+<span id="cb9-6"><a href=""></a>  - Loads SPSS .sav files - Generates `read_sav()` in R</span>
+<span id="cb9-7"><a href=""></a></span>
+<span id="cb9-8"><a href=""></a>Data Manipulation</span>
+<span id="cb9-9"><a href=""></a>- SORT CASES BY variable(s) (A/D)</span>
+<span id="cb9-10"><a href=""></a>- COMPUTE target = expression</span>
+<span id="cb9-11"><a href=""></a>  - Basic arithmetic and logical expressions</span>
+<span id="cb9-12"><a href=""></a>  - Variable assignments</span>
+<span id="cb9-13"><a href=""></a></span>
+<span id="cb9-14"><a href=""></a>- IF (condition) target = expression</span>
+<span id="cb9-15"><a href=""></a>  - Generates `mutate()` with `if_else()` in R</span>
+<span id="cb9-16"><a href=""></a></span>
+<span id="cb9-17"><a href=""></a>- RECODE source_vars (...) INTO target_vars</span>
+<span id="cb9-18"><a href=""></a>  - Variable recoding with mapping rules</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="cont" class="slide level2 appendix-slide">
+<h2>Cont</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a href=""></a>Data Filtering</span>
+<span id="cb10-2"><a href=""></a>- SELECT IF (condition)</span>
+<span id="cb10-3"><a href=""></a>  - Row filtering based on conditions</span>
+<span id="cb10-4"><a href=""></a>  - Generates `filter()` in R</span>
+<span id="cb10-5"><a href=""></a></span>
+<span id="cb10-6"><a href=""></a>Data Joining</span>
+<span id="cb10-7"><a href=""></a>- MATCH FILES /FILE=* /TABLE='file' /BY key</span>
+<span id="cb10-8"><a href=""></a>  - Inner and left joins</span>
+<span id="cb10-9"><a href=""></a>  - Multiple key variables</span>
+<span id="cb10-10"><a href=""></a>  - Generates `inner_join()` and `left_join()` in R</span>
+<span id="cb10-11"><a href=""></a></span>
+<span id="cb10-12"><a href=""></a>Aggregation</span>
+<span id="cb10-13"><a href=""></a>- AGGREGATE /BREAK=group_vars /target=func(source)</span>
+<span id="cb10-14"><a href=""></a>  - Grouped aggregations</span>
+<span id="cb10-15"><a href=""></a>  - Functions: MEAN, SUM, MAX, MIN</span>
+<span id="cb10-16"><a href=""></a>  - Generates `group_by()` and `summarise()` in R</span>
+<span id="cb10-17"><a href=""></a></span>
+<span id="cb10-18"><a href=""></a>Schema Definition</span>
+<span id="cb10-19"><a href=""></a>- DATA LIST FREE / var1 (F8.0) var2 (A10)</span>
+<span id="cb10-20"><a href=""></a>  - Variable type definitions</span>
+<span id="cb10-21"><a href=""></a>  - Basic format specifications</span>
+<span id="cb10-22"><a href=""></a>  - Injected into IR schema</span>
+<span id="cb10-23"><a href=""></a></span>
+<span id="cb10-24"><a href=""></a>Data Saving</span>
+<span id="cb10-25"><a href=""></a>- SAVE OUTFILE='filename.sav'</span>
+<span id="cb10-26"><a href=""></a>  - Saves to SPSS .sav format</span>
+<span id="cb10-27"><a href=""></a>  - Generates `write_sav()` in R</span>
+<span id="cb10-28"><a href=""></a></span>
+<span id="cb10-29"><a href=""></a>- SAVE OUTFILE='filename.csv'</span>
+<span id="cb10-30"><a href=""></a>  - Saves to CSV format</span>
+<span id="cb10-31"><a href=""></a>  - Generates `write_csv()` in R</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="supported-functions-and-operators" class="slide level2 appendix-slide">
+<h2>Supported Functions and Operators</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb11-1"><a href=""></a>Mathematical Functions</span>
+<span id="cb11-2"><a href=""></a>- TRUNC() → floor()</span>
+<span id="cb11-3"><a href=""></a>- RND() → round()</span>
+<span id="cb11-4"><a href=""></a>- ABS() → abs()</span>
+<span id="cb11-5"><a href=""></a>- MOD(a,b) → a %% b</span>
+<span id="cb11-6"><a href=""></a></span>
+<span id="cb11-7"><a href=""></a>String Functions</span>
+<span id="cb11-8"><a href=""></a>- CONCAT() → paste0()</span>
+<span id="cb11-9"><a href=""></a>- PASTE() → paste0()</span>
+<span id="cb11-10"><a href=""></a>- STR_C() → str_c()</span>
+<span id="cb11-11"><a href=""></a></span>
+<span id="cb11-12"><a href=""></a>Statistical Functions</span>
+<span id="cb11-13"><a href=""></a>- MEAN() → mean()</span>
+<span id="cb11-14"><a href=""></a>- LAG() → lag()</span>
+<span id="cb11-15"><a href=""></a></span>
+<span id="cb11-16"><a href=""></a>Logical Operators</span>
+<span id="cb11-17"><a href=""></a>- AND → &amp;</span>
+<span id="cb11-18"><a href=""></a>- OR → |</span>
+<span id="cb11-19"><a href=""></a>- &lt;&gt; → !=</span>
+<span id="cb11-20"><a href=""></a>- = → == (in expressions)</span>
+<span id="cb11-21"><a href=""></a></span>
+<span id="cb11-22"><a href=""></a>Conditional Functions</span>
+<span id="cb11-23"><a href=""></a>- IF_ELSE() → if_else()</span>
+<span id="cb11-24"><a href=""></a>- CASE_WHEN() → case_when()</span>
+<span id="cb11-25"><a href=""></a>- NA_IF() → na_if()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="cont-1" class="slide level2 appendix-slide">
+<h2>Cont</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb12-1"><a href=""></a>Date Functions</span>
+<span id="cb12-2"><a href=""></a>- DATE.MDY(m,d,y) → make_date(year=y, month=m, day=d)</span>
+<span id="cb12-3"><a href=""></a></span>
+<span id="cb12-4"><a href=""></a>Special Values</span>
+<span id="cb12-5"><a href=""></a>- $SYSMIS → NA</span>
+<span id="cb12-6"><a href=""></a></span>
+<span id="cb12-7"><a href=""></a>Partially Supported Features</span>
+<span id="cb12-8"><a href=""></a></span>
+<span id="cb12-9"><a href=""></a>Conditional Logic</span>
+<span id="cb12-10"><a href=""></a>- DO IF / END IF blocks</span>
+<span id="cb12-11"><a href=""></a>  - Basic structure recognized</span>
+<span id="cb12-12"><a href=""></a>  - May have formatting inconsistencies in generated conditions</span>
+<span id="cb12-13"><a href=""></a></span>
+<span id="cb12-14"><a href=""></a>Generic Commands</span>
+<span id="cb12-15"><a href=""></a>- Unknown SPSS commands parsed as generic nodes</span>
+<span id="cb12-16"><a href=""></a>- Logged as warnings in generated R code</span>
+<span id="cb12-17"><a href=""></a>- No functional implementation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="unsupported-features" class="slide level2 appendix-slide">
+<h2>Unsupported Features</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb13-1"><a href=""></a>Data Input</span>
+<span id="cb13-2"><a href=""></a>- Complex DATA LIST formats beyond FREE</span>
+<span id="cb13-3"><a href=""></a>- BEGIN DATA / END DATA inline data blocks (skipped)</span>
+<span id="cb13-4"><a href=""></a>- Other file types beyond TXT and SAV</span>
+<span id="cb13-5"><a href=""></a>- Complex delimiter specifications</span>
+<span id="cb13-6"><a href=""></a></span>
+<span id="cb13-7"><a href=""></a>Advanced Functions</span>
+<span id="cb13-8"><a href=""></a>- Most SPSS-specific functions not in the registry</span>
+<span id="cb13-9"><a href=""></a>- Advanced string manipulation beyond CONCAT</span>
+<span id="cb13-10"><a href=""></a>- Complex date/time operations beyond MDY</span>
+<span id="cb13-11"><a href=""></a>- Missing value patterns beyond $SYSMIS</span>
+<span id="cb13-12"><a href=""></a></span>
+<span id="cb13-13"><a href=""></a>Control Flow</span>
+<span id="cb13-14"><a href=""></a>- Complex nested IF/DO IF structures</span>
+<span id="cb13-15"><a href=""></a>- LOOP/END LOOP constructs</span>
+<span id="cb13-16"><a href=""></a>- Macro definitions and calls</span>
+<span id="cb13-17"><a href=""></a></span>
+<span id="cb13-18"><a href=""></a>Output</span>
+<span id="cb13-19"><a href=""></a>- Complex SAVE options and formats</span>
+<span id="cb13-20"><a href=""></a>- EXPORT commands</span>
+<span id="cb13-21"><a href=""></a>- PRINT/WRITE statements</span>
+<span id="cb13-22"><a href=""></a></span>
+<span id="cb13-23"><a href=""></a>Statistical Procedures</span>
+<span id="cb13-24"><a href=""></a>- All statistical analysis commands (DESCRIPTIVES, FREQUENCIES, etc.)</span>
+<span id="cb13-25"><a href=""></a>- Parsed as generic nodes with warnings</span>
+<span id="cb13-26"><a href=""></a></span>
+<span id="cb13-27"><a href=""></a>File Management</span>
+<span id="cb13-28"><a href=""></a>- FILE HANDLE definitions</span>
+<span id="cb13-29"><a href=""></a>- Complex file path handling</span>
+<span id="cb13-30"><a href=""></a>- Temporary file management</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section class="slide level2">
+
 
 </section>
     </div>

@@ -180,23 +180,28 @@
 .reveal .title-slide h1 {
   margin-top: 3em;
 }
-
+/* Slightly smaller slide text, but not tiny */
 .appendix-slide {
-  font-size: 0.75em;   /* or try 0.8em / 0.7em */
+  font-size: 0.85em;     /* was 0.5em */
 }
 
+/* Code blocks slightly smaller than normal text */
 .appendix-slide pre code {
-  font-size: 0.70em;   /* shrink code blocks too */
+  font-size: 0.80em !important;   /* was 0.65em */
+  line-height: 1.25em;
 }
 
-.appendix-slide h2 {
-  font-size: 1.2em;    /* titles slightly smaller */
+/* Keep margins tight but not crushed */
+.appendix-slide pre {
+  margin-top: 0.4em !important;
+  margin-bottom: 0.4em !important;
 }
 
+/* Normalized title sizes */
+.appendix-slide h2,
 .appendix-slide h3 {
-  font-size: 1.0em;
+  font-size: 1.10em !important;   /* readable and consistent */
 }
-
 .footnote {
   font-size: 0.7em;
   color: #555;
