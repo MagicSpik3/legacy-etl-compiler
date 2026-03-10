@@ -1,7 +1,7 @@
 ---
 title: "Legacy ETL Compiler"
 author: "Mark London"
-date: "2026-03-05"
+date: "10-03-2026"
 
 format:
   revealjs:
@@ -123,22 +123,6 @@ digraph {
 
 ---
 
-## Why not translate directly to R?
-
-* The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
-* Hidden Side Effects: SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
-* Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.
-
----
-
-## Why via a State Machine?
-
-* A State Machine models the true underlying *territory* of the data lifecycle, independent of the *map* (the syntax) of either language.
-* It makes dependencies explicitly clear and eliminates hidden side effects.
-* It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.
-
----
-
 ## What is a State Machine?
 
 * A mathematical model of a program where each operation explicitly transitions the system to a new, immutable state.
@@ -210,7 +194,7 @@ digraph {
 
   S0 -> S1 -> S2 -> S3 -> S4;
 }
-
+```
 ---
 
 ## State Machine (Compiler-Level)
@@ -220,6 +204,124 @@ digraph {
 * The compiler can then optimise, reorder, and validate these transformations.
 
 ---
+
+
+## Why not translate directly to R?
+
+* The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
+* Hidden Side Effects: SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
+* Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.
+
+---
+
+## Why via a State Machine?
+
+* A State Machine models the true underlying *territory* of the data lifecycle, independent of the *map* (the syntax) of either language.
+* It makes dependencies explicitly clear and eliminates hidden side effects.
+* It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.
+
+---
+
+## Example: Dependency Graph
+
+```{dot}
+digraph {
+
+  rankdir=LR;
+  bgcolor="transparent";
+  fontname="Helvetica";
+  nodesep=1.0;
+  ranksep=1.2;
+
+  node [
+    fontname="Helvetica",
+    fontsize=32,
+    style="rounded,filled",
+    penwidth=3,
+    margin=0.35
+  ];
+
+  edge [
+    penwidth=3,
+    color="#424242",
+    fontsize=26,
+    fontname="Helvetica"
+  ];
+
+  /* --------------------------
+     SPSS SCRIPT
+     -------------------------- */
+
+  subgraph cluster_spss {
+
+    label="SPSS Script";
+    fontsize=36;
+    fontname="Helvetica-Bold";
+    style=filled;
+    fillcolor="#E3F2FD";
+    color="#1565C0";
+    penwidth=3;
+
+    code [
+      shape=box,
+      fontsize=28,
+      fillcolor="white",
+      color="#0D47A1",
+      label="COMPUTE income_tax = income * 0.2\nCOMPUTE net_income = income - income_tax\nEXECUTE"
+    ];
+  }
+
+  /* --------------------------
+     TOPOLOGY GRAPH
+     -------------------------- */
+
+  subgraph cluster_graph {
+
+    label="Dependency Graph (Topology)";
+    fontsize=36;
+    fontname="Helvetica-Bold";
+    style=filled;
+    fillcolor="#E8F5E9";
+    color="#2E7D32";
+    penwidth=3;
+
+    income [
+      label="income\nInput",
+      fillcolor="#BBDEFB",
+      color="#0D47A1"
+    ];
+
+    tax [
+      label="income_tax\nDerived",
+      fillcolor="#FFE082",
+      color="#E65100"
+    ];
+
+    net [
+      label="net_income\nOutput",
+      fillcolor="#A5D6A7",
+      color="#1B5E20"
+    ];
+
+    income -> tax;
+    income -> net;
+    tax -> net;
+  }
+
+  /* --------------------------
+     PARSER STEP
+     -------------------------- */
+
+  code -> income [
+    style=dashed,
+    label="Parser extracts variables",
+    color="#616161"
+  ];
+
+}
+```
+---
+
 
 ## Verification Artifacts { .appendix-slide }
 
@@ -483,7 +585,6 @@ Generic Commands
 ```
 ---
 
-
 ## Unsupported Features { .appendix-slide }
 ```text
 Data Input
@@ -518,5 +619,3 @@ File Management
 - Temporary file management
 ```
 ---
-
-

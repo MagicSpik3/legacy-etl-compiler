@@ -1,5 +1,8 @@
 # Legacy ETL Compiler — README
 
+A State Machine is a structured way to control a complex process.
+
+
 ~/git_etl_old/SPSS-examplles/hello_world$ cd ~/git_etl_old/SPSS-examplles/hello_world/ && python ~/git/legacy-etl-compiler/src/compiler.py --manifest hello.sps --output-dir ~/git/legacy-etl-compiler/new_dist
 
 
