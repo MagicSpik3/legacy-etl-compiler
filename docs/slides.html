@@ -469,22 +469,6 @@ Mark London
 <li>The compiler can then optimise, reorder, and validate these transformations.</li>
 </ul>
 </section>
-<section id="why-not-translate-directly-to-r" class="slide level2">
-<h2>Why not translate directly to R?</h2>
-<ul>
-<li>The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.</li>
-<li>Hidden Side Effects: SPSS is highly procedural and relies on a mutable “active dataset.” R leans towards functional dataframe manipulation.</li>
-<li>Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.</li>
-</ul>
-</section>
-<section id="why-via-a-state-machine" class="slide level2">
-<h2>Why via a State Machine?</h2>
-<ul>
-<li>A State Machine models the true underlying <em>territory</em> of the data lifecycle, independent of the <em>map</em> (the syntax) of either language.</li>
-<li>It makes dependencies explicitly clear and eliminates hidden side effects.</li>
-<li>It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.</li>
-</ul>
-</section>
 <section id="example-dependency-graph" class="slide level2">
 <h2>Example: Dependency Graph</h2>
 <div class="cell" data-layout-align="default">
@@ -565,6 +549,22 @@ Mark London
 </div>
 </div>
 </div>
+</section>
+<section id="why-not-translate-directly-to-r" class="slide level2">
+<h2>Why not translate directly to R?</h2>
+<ul>
+<li>The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.</li>
+<li>Hidden Side Effects: SPSS is highly procedural and relies on a mutable “active dataset.” R leans towards functional dataframe manipulation.</li>
+<li>Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.</li>
+</ul>
+</section>
+<section id="why-via-a-state-machine" class="slide level2">
+<h2>Why via a State Machine?</h2>
+<ul>
+<li>A State Machine models the true underlying <em>territory</em> of the data lifecycle, independent of the <em>map</em> (the syntax) of either language.</li>
+<li>It makes dependencies explicitly clear and eliminates hidden side effects.</li>
+<li>It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.</li>
+</ul>
 </section>
 <section id="verification-artifacts" class="slide level2 appendix-slide">
 <h2>Verification Artifacts</h2>

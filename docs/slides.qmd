@@ -205,23 +205,6 @@ digraph {
 
 ---
 
-
-## Why not translate directly to R?
-
-* The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
-* Hidden Side Effects: SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
-* Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.
-
----
-
-## Why via a State Machine?
-
-* A State Machine models the true underlying *territory* of the data lifecycle, independent of the *map* (the syntax) of either language.
-* It makes dependencies explicitly clear and eliminates hidden side effects.
-* It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.
-
----
-
 ## Example: Dependency Graph
 
 ```{dot}
@@ -321,6 +304,23 @@ digraph {
 }
 ```
 ---
+
+## Why not translate directly to R?
+
+* The Syntax Trap: Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
+* Hidden Side Effects: SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
+* Brittle Output: Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.
+
+---
+
+## Why via a State Machine?
+
+* A State Machine models the true underlying *territory* of the data lifecycle, independent of the *map* (the syntax) of either language.
+* It makes dependencies explicitly clear and eliminates hidden side effects.
+* It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.
+
+---
+
 
 
 ## Verification Artifacts { .appendix-slide }
