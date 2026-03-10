@@ -210,9 +210,10 @@ Mark London
 <section id="overview" class="slide level2">
 <h2>Overview</h2>
 <ul>
-<li>Purpose: migrate SPSS/PSPP logic into R pipelines</li>
-<li>Verification &amp; validation cycle</li>
+<li>Purpose: migrate SPSS logic into R pipelines</li>
+<li>Verification &amp; validation cycle of output</li>
 </ul>
+<p>This is a proof of concept to explore the value potential of developing it into full product.</p>
 </section>
 <section id="architecture" class="slide level2">
 <h2>Architecture</h2>
@@ -221,117 +222,117 @@ Mark London
 <div>
 <p></p><figure class=""><p></p>
 <div>
-<svg width="960" height="480" viewbox="0.00 0.00 1360.67 167.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<svg width="960" height="480" viewbox="0.00 0.00 1290.64 167.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 163)">
 <g id="clust1" class="cluster">
 <title>cluster_parser</title>
-<polygon fill="#e3f2fd" stroke="#1565c0" stroke-width="2" points="8,-57 8,-146 629.77,-146 629.77,-57 8,-57"></polygon>
-<text text-anchor="middle" x="318.89" y="-120.4" font-family="Helvetica,sans-Serif" font-size="24.00">Parser &amp; Topology</text>
+<polygon fill="#e3f2fd" stroke="#1565c0" stroke-width="2" points="8,-57 8,-146 559.74,-146 559.74,-57 8,-57"></polygon>
+<text text-anchor="middle" x="283.87" y="-120.4" font-family="Helvetica,sans-Serif" font-size="24.00">Parser &amp; Topology</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_optimizer</title>
-<polygon fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" points="649.77,-58 649.77,-147 859.63,-147 859.63,-58 649.77,-58"></polygon>
-<text text-anchor="middle" x="754.7" y="-121.4" font-family="Helvetica,sans-Serif" font-size="24.00">Optimizer</text>
+<polygon fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" points="579.74,-58 579.74,-147 789.6,-147 789.6,-58 579.74,-58"></polygon>
+<text text-anchor="middle" x="684.67" y="-121.4" font-family="Helvetica,sans-Serif" font-size="24.00">Optimiser</text>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_codegen</title>
-<polygon fill="#fff3e0" stroke="#e65100" stroke-width="2" points="879.63,-60 879.63,-149 1164.84,-149 1164.84,-60 879.63,-60"></polygon>
-<text text-anchor="middle" x="1022.24" y="-123.4" font-family="Helvetica,sans-Serif" font-size="24.00">Code Generation</text>
+<polygon fill="#fff3e0" stroke="#e65100" stroke-width="2" points="809.6,-60 809.6,-149 1094.81,-149 1094.81,-60 809.6,-60"></polygon>
+<text text-anchor="middle" x="952.21" y="-123.4" font-family="Helvetica,sans-Serif" font-size="24.00">Code Generation</text>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_verif</title>
-<polygon fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2" points="1184.84,-8 1184.84,-151 1344.67,-151 1344.67,-8 1184.84,-8"></polygon>
-<text text-anchor="middle" x="1264.75" y="-125.4" font-family="Helvetica,sans-Serif" font-size="24.00">Verification</text>
+<polygon fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2" points="1114.81,-8 1114.81,-151 1274.64,-151 1274.64,-8 1114.81,-8"></polygon>
+<text text-anchor="middle" x="1194.73" y="-125.4" font-family="Helvetica,sans-Serif" font-size="24.00">Verification</text>
 </g>
 <!-- A -->
 <g id="node1" class="node">
 <title>A</title>
-<path fill="#bbdefb" stroke="#0d47a1" stroke-width="2" d="M200.1,-101C200.1,-101 27.97,-101 27.97,-101 21.97,-101 15.97,-95 15.97,-89 15.97,-89 15.97,-77 15.97,-77 15.97,-71 21.97,-65 27.97,-65 27.97,-65 200.1,-65 200.1,-65 206.1,-65 212.1,-71 212.1,-77 212.1,-77 212.1,-89 212.1,-89 212.1,-95 206.1,-101 200.1,-101"></path>
-<text text-anchor="middle" x="114.03" y="-77" font-family="Helvetica,sans-Serif" font-size="20.00">SPSS / PSPP Script</text>
+<path fill="#bbdefb" stroke="#0d47a1" stroke-width="2" d="M130.06,-101C130.06,-101 27.98,-101 27.98,-101 21.98,-101 15.98,-95 15.98,-89 15.98,-89 15.98,-77 15.98,-77 15.98,-71 21.98,-65 27.98,-65 27.98,-65 130.06,-65 130.06,-65 136.06,-65 142.06,-71 142.06,-77 142.06,-77 142.06,-89 142.06,-89 142.06,-95 136.06,-101 130.06,-101"></path>
+<text text-anchor="middle" x="79.02" y="-77" font-family="Helvetica,sans-Serif" font-size="20.00">SPSS Script</text>
 </g>
 <!-- B -->
 <g id="node2" class="node">
 <title>B</title>
-<path fill="#90caf9" stroke="#0d47a1" stroke-width="2" d="M369.83,-101C369.83,-101 260.15,-101 260.15,-101 254.15,-101 248.15,-95 248.15,-89 248.15,-89 248.15,-77 248.15,-77 248.15,-71 254.15,-65 260.15,-65 260.15,-65 369.83,-65 369.83,-65 375.83,-65 381.83,-71 381.83,-77 381.83,-77 381.83,-89 381.83,-89 381.83,-95 375.83,-101 369.83,-101"></path>
-<text text-anchor="middle" x="314.99" y="-77" font-family="Helvetica,sans-Serif" font-size="20.00">GraphBuilder</text>
+<path fill="#90caf9" stroke="#0d47a1" stroke-width="2" d="M299.8,-101C299.8,-101 190.12,-101 190.12,-101 184.12,-101 178.12,-95 178.12,-89 178.12,-89 178.12,-77 178.12,-77 178.12,-71 184.12,-65 190.12,-65 190.12,-65 299.8,-65 299.8,-65 305.8,-65 311.8,-71 311.8,-77 311.8,-77 311.8,-89 311.8,-89 311.8,-95 305.8,-101 299.8,-101"></path>
+<text text-anchor="middle" x="244.96" y="-77" font-family="Helvetica,sans-Serif" font-size="20.00">GraphBuilder</text>
 </g>
 <!-- A&#45;&gt;B -->
 <g id="edge1" class="edge">
 <title>A-&gt;B</title>
-<path fill="none" stroke="#424242" stroke-width="3" d="M212.18,-83C220.81,-83 229.45,-83 237.87,-83"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="3" points="237.99,-86.5 247.99,-83 237.99,-79.5 237.99,-86.5"></polygon>
+<path fill="none" stroke="#424242" stroke-width="3" d="M142.47,-83C150.7,-83 159.21,-83 167.65,-83"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="3" points="167.87,-86.5 177.87,-83 167.87,-79.5 167.87,-86.5"></polygon>
 </g>
 <!-- G -->
 <g id="node7" class="node">
 <title>G</title>
-<path fill="#ce93d8" stroke="#4a148c" stroke-width="2" d="M1320.21,-52C1320.21,-52 1209.3,-52 1209.3,-52 1203.3,-52 1197.3,-46 1197.3,-40 1197.3,-40 1197.3,-28 1197.3,-28 1197.3,-22 1203.3,-16 1209.3,-16 1209.3,-16 1320.21,-16 1320.21,-16 1326.21,-16 1332.21,-22 1332.21,-28 1332.21,-28 1332.21,-40 1332.21,-40 1332.21,-46 1326.21,-52 1320.21,-52"></path>
-<text text-anchor="middle" x="1264.75" y="-28" font-family="Helvetica,sans-Serif" font-size="20.00">PSPP Output</text>
+<path fill="#ce93d8" stroke="#4a148c" stroke-width="2" d="M1250.18,-52C1250.18,-52 1139.27,-52 1139.27,-52 1133.27,-52 1127.27,-46 1127.27,-40 1127.27,-40 1127.27,-28 1127.27,-28 1127.27,-22 1133.27,-16 1139.27,-16 1139.27,-16 1250.18,-16 1250.18,-16 1256.18,-16 1262.18,-22 1262.18,-28 1262.18,-28 1262.18,-40 1262.18,-40 1262.18,-46 1256.18,-52 1250.18,-52"></path>
+<text text-anchor="middle" x="1194.73" y="-28" font-family="Helvetica,sans-Serif" font-size="20.00">PSPP Output</text>
 </g>
 <!-- A&#45;&gt;G -->
 <g id="edge6" class="edge">
 <title>A-&gt;G</title>
-<path fill="none" stroke="#4a148c" stroke-width="3" stroke-dasharray="5,2" d="M195.66,-64.94C212.88,-61.55 231.03,-58.35 248.07,-56 367.61,-39.52 398.17,-36 518.84,-36 518.84,-36 518.84,-36 951.66,-36 1031.86,-36 1123.65,-35.33 1186.81,-34.77"></path>
-<polygon fill="#4a148c" stroke="#4a148c" stroke-width="3" points="1187.12,-38.26 1197.09,-34.67 1187.06,-31.27 1187.12,-38.26"></polygon>
+<path fill="none" stroke="#4a148c" stroke-width="3" stroke-dasharray="5,2" d="M138.17,-64.98C151.18,-61.51 164.99,-58.26 178.04,-56 296.94,-35.43 328.14,-36 448.81,-36 448.81,-36 448.81,-36 881.63,-36 961.83,-36 1053.62,-35.33 1116.78,-34.77"></path>
+<polygon fill="#4a148c" stroke="#4a148c" stroke-width="3" points="1117.09,-38.26 1127.06,-34.67 1117.03,-31.27 1117.09,-38.26"></polygon>
 </g>
 <!-- C -->
 <g id="node3" class="node">
 <title>C</title>
-<path fill="#64b5f6" stroke="#0d47a1" stroke-width="2" d="M609.7,-101C609.7,-101 429.98,-101 429.98,-101 423.98,-101 417.98,-95 417.98,-89 417.98,-89 417.98,-77 417.98,-77 417.98,-71 423.98,-65 429.98,-65 429.98,-65 609.7,-65 609.7,-65 615.7,-65 621.7,-71 621.7,-77 621.7,-77 621.7,-89 621.7,-89 621.7,-95 615.7,-101 609.7,-101"></path>
-<text text-anchor="middle" x="519.84" y="-77" font-family="Helvetica,sans-Serif" font-size="20.00">Raw Topology YAML</text>
+<path fill="#64b5f6" stroke="#0d47a1" stroke-width="2" d="M539.67,-101C539.67,-101 359.95,-101 359.95,-101 353.95,-101 347.95,-95 347.95,-89 347.95,-89 347.95,-77 347.95,-77 347.95,-71 353.95,-65 359.95,-65 359.95,-65 539.67,-65 539.67,-65 545.67,-65 551.67,-71 551.67,-77 551.67,-77 551.67,-89 551.67,-89 551.67,-95 545.67,-101 539.67,-101"></path>
+<text text-anchor="middle" x="449.81" y="-77" font-family="Helvetica,sans-Serif" font-size="20.00">Raw Topology YAML</text>
 </g>
 <!-- B&#45;&gt;C -->
 <g id="edge2" class="edge">
 <title>B-&gt;C</title>
-<path fill="none" stroke="#424242" stroke-width="3" d="M381.85,-83C390.25,-83 399.03,-83 407.91,-83"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="3" points="407.96,-86.5 417.96,-83 407.96,-79.5 407.96,-86.5"></polygon>
+<path fill="none" stroke="#424242" stroke-width="3" d="M311.82,-83C320.23,-83 329,-83 337.88,-83"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="3" points="337.93,-86.5 347.93,-83 337.93,-79.5 337.93,-86.5"></polygon>
 </g>
 <!-- D -->
 <g id="node4" class="node">
 <title>D</title>
-<path fill="#a5d6a7" stroke="#1b5e20" stroke-width="2" d="M839.56,-102C839.56,-102 669.84,-102 669.84,-102 663.84,-102 657.84,-96 657.84,-90 657.84,-90 657.84,-78 657.84,-78 657.84,-72 663.84,-66 669.84,-66 669.84,-66 839.56,-66 839.56,-66 845.56,-66 851.56,-72 851.56,-78 851.56,-78 851.56,-90 851.56,-90 851.56,-96 845.56,-102 839.56,-102"></path>
-<text text-anchor="middle" x="754.7" y="-78" font-family="Helvetica,sans-Serif" font-size="20.00">Optimized Topology</text>
+<path fill="#a5d6a7" stroke="#1b5e20" stroke-width="2" d="M769.53,-102C769.53,-102 599.81,-102 599.81,-102 593.81,-102 587.81,-96 587.81,-90 587.81,-90 587.81,-78 587.81,-78 587.81,-72 593.81,-66 599.81,-66 599.81,-66 769.53,-66 769.53,-66 775.53,-66 781.53,-72 781.53,-78 781.53,-78 781.53,-90 781.53,-90 781.53,-96 775.53,-102 769.53,-102"></path>
+<text text-anchor="middle" x="684.67" y="-78" font-family="Helvetica,sans-Serif" font-size="20.00">Optimised Topology</text>
 </g>
 <!-- C&#45;&gt;D -->
 <g id="edge3" class="edge">
 <title>C-&gt;D</title>
-<path fill="none" stroke="#424242" stroke-width="3" d="M621.96,-83.43C630.52,-83.47 639.19,-83.51 647.78,-83.55"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="3" points="647.81,-87.05 657.82,-83.59 647.84,-80.05 647.81,-87.05"></polygon>
+<path fill="none" stroke="#424242" stroke-width="3" d="M551.93,-83.43C560.49,-83.47 569.16,-83.51 577.75,-83.55"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="3" points="577.78,-87.05 587.79,-83.59 577.81,-80.05 577.78,-87.05"></polygon>
 </g>
 <!-- E -->
 <g id="node5" class="node">
 <title>E</title>
-<path fill="#ffcc80" stroke="#e65100" stroke-width="2" d="M1001.71,-104C1001.71,-104 899.61,-104 899.61,-104 893.61,-104 887.61,-98 887.61,-92 887.61,-92 887.61,-80 887.61,-80 887.61,-74 893.61,-68 899.61,-68 899.61,-68 1001.71,-68 1001.71,-68 1007.71,-68 1013.71,-74 1013.71,-80 1013.71,-80 1013.71,-92 1013.71,-92 1013.71,-98 1007.71,-104 1001.71,-104"></path>
-<text text-anchor="middle" x="950.66" y="-80" font-family="Helvetica,sans-Serif" font-size="20.00">R Generator</text>
+<path fill="#ffcc80" stroke="#e65100" stroke-width="2" d="M931.68,-104C931.68,-104 829.58,-104 829.58,-104 823.58,-104 817.58,-98 817.58,-92 817.58,-92 817.58,-80 817.58,-80 817.58,-74 823.58,-68 829.58,-68 829.58,-68 931.68,-68 931.68,-68 937.68,-68 943.68,-74 943.68,-80 943.68,-80 943.68,-92 943.68,-92 943.68,-98 937.68,-104 931.68,-104"></path>
+<text text-anchor="middle" x="880.63" y="-80" font-family="Helvetica,sans-Serif" font-size="20.00">R Generator</text>
 </g>
 <!-- D&#45;&gt;E -->
 <g id="edge4" class="edge">
 <title>D-&gt;E</title>
-<path fill="none" stroke="#424242" stroke-width="3" d="M851.83,-84.99C860.43,-85.08 869.04,-85.17 877.39,-85.25"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="3" points="877.38,-88.75 887.42,-85.36 877.46,-81.76 877.38,-88.75"></polygon>
+<path fill="none" stroke="#424242" stroke-width="3" d="M781.8,-84.99C790.4,-85.08 799.01,-85.17 807.36,-85.25"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="3" points="807.36,-88.75 817.39,-85.36 807.43,-81.76 807.36,-88.75"></polygon>
 </g>
 <!-- F -->
 <g id="node6" class="node">
 <title>F</title>
-<path fill="#ffb74d" stroke="#e65100" stroke-width="2" d="M1144.92,-104C1144.92,-104 1061.6,-104 1061.6,-104 1055.6,-104 1049.6,-98 1049.6,-92 1049.6,-92 1049.6,-80 1049.6,-80 1049.6,-74 1055.6,-68 1061.6,-68 1061.6,-68 1144.92,-68 1144.92,-68 1150.92,-68 1156.92,-74 1156.92,-80 1156.92,-80 1156.92,-92 1156.92,-92 1156.92,-98 1150.92,-104 1144.92,-104"></path>
-<text text-anchor="middle" x="1103.26" y="-80" font-family="Helvetica,sans-Serif" font-size="20.00">Pipeline.R</text>
+<path fill="#ffb74d" stroke="#e65100" stroke-width="2" d="M1074.9,-104C1074.9,-104 991.57,-104 991.57,-104 985.57,-104 979.57,-98 979.57,-92 979.57,-92 979.57,-80 979.57,-80 979.57,-74 985.57,-68 991.57,-68 991.57,-68 1074.9,-68 1074.9,-68 1080.9,-68 1086.9,-74 1086.9,-80 1086.9,-80 1086.9,-92 1086.9,-92 1086.9,-98 1080.9,-104 1074.9,-104"></path>
+<text text-anchor="middle" x="1033.23" y="-80" font-family="Helvetica,sans-Serif" font-size="20.00">Pipeline.R</text>
 </g>
 <!-- E&#45;&gt;F -->
 <g id="edge5" class="edge">
 <title>E-&gt;F</title>
-<path fill="none" stroke="#424242" stroke-width="3" d="M1013.78,-86C1022.19,-86 1030.83,-86 1039.26,-86"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="3" points="1039.4,-89.5 1049.4,-86 1039.4,-82.5 1039.4,-89.5"></polygon>
+<path fill="none" stroke="#424242" stroke-width="3" d="M943.75,-86C952.16,-86 960.8,-86 969.23,-86"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="3" points="969.37,-89.5 979.37,-86 969.37,-82.5 969.37,-89.5"></polygon>
 </g>
 <!-- H -->
 <g id="node8" class="node">
 <title>H</title>
-<path fill="#ba68c8" stroke="#4a148c" stroke-width="2" d="M1324.58,-106C1324.58,-106 1204.93,-106 1204.93,-106 1198.93,-106 1192.93,-100 1192.93,-94 1192.93,-94 1192.93,-82 1192.93,-82 1192.93,-76 1198.93,-70 1204.93,-70 1204.93,-70 1324.58,-70 1324.58,-70 1330.58,-70 1336.58,-76 1336.58,-82 1336.58,-82 1336.58,-94 1336.58,-94 1336.58,-100 1330.58,-106 1324.58,-106"></path>
-<text text-anchor="middle" x="1264.75" y="-82" font-family="Helvetica,sans-Serif" font-size="20.00">Rscript Output</text>
+<path fill="#ba68c8" stroke="#4a148c" stroke-width="2" d="M1254.55,-106C1254.55,-106 1134.9,-106 1134.9,-106 1128.9,-106 1122.9,-100 1122.9,-94 1122.9,-94 1122.9,-82 1122.9,-82 1122.9,-76 1128.9,-70 1134.9,-70 1134.9,-70 1254.55,-70 1254.55,-70 1260.55,-70 1266.55,-76 1266.55,-82 1266.55,-82 1266.55,-94 1266.55,-94 1266.55,-100 1260.55,-106 1254.55,-106"></path>
+<text text-anchor="middle" x="1194.73" y="-82" font-family="Helvetica,sans-Serif" font-size="20.00">Rscript Output</text>
 </g>
 <!-- F&#45;&gt;H -->
 <g id="edge7" class="edge">
 <title>F-&gt;H</title>
-<path fill="none" stroke="#4a148c" stroke-width="3" stroke-dasharray="5,2" d="M1156.93,-86.66C1165.15,-86.76 1173.8,-86.87 1182.47,-86.98"></path>
-<polygon fill="#4a148c" stroke="#4a148c" stroke-width="3" points="1182.6,-90.48 1192.65,-87.11 1182.69,-83.48 1182.6,-90.48"></polygon>
+<path fill="none" stroke="#4a148c" stroke-width="3" stroke-dasharray="5,2" d="M1086.9,-86.66C1095.12,-86.76 1103.77,-86.87 1112.45,-86.98"></path>
+<polygon fill="#4a148c" stroke="#4a148c" stroke-width="3" points="1112.57,-90.48 1122.62,-87.11 1112.66,-83.48 1112.57,-90.48"></polygon>
 </g>
 </g>
 </svg>
@@ -340,12 +341,17 @@ Mark London
 </div>
 </div>
 </div>
+<div class="footnote">
+<ul>
+<li>PSPP is a free Linux version of SPSS. Whilst not identical, it accepts most SPSS syntax.</li>
+</ul>
+</div>
 </section>
 <section id="what-is-the-legacy-etl-compiler-system" class="slide level2">
 <h2>What is the legacy-etl-compiler system?</h2>
 <ul>
-<li>Takes an existing SPSS/PSPP pipeline and converts it into another language (e.g., R).</li>
-<li>Uses an intermediate representation to make the compiler deterministic, testable, and optimizable.</li>
+<li>Takes an existing SPSS pipeline and converts it into another language (e.g., R).</li>
+<li>Uses an intermediate representation to make the compiler deterministic, testable, and optimisable.</li>
 <li>The key intermediate representation is a <strong>State Machine</strong> built from the original script.</li>
 </ul>
 </section>
@@ -354,7 +360,7 @@ Mark London
 <ul>
 <li><strong>The Syntax Trap:</strong> Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.</li>
 <li><strong>Hidden Side Effects:</strong> SPSS is highly procedural and relies on a mutable “active dataset.” R leans towards functional dataframe manipulation.</li>
-<li><strong>Brittle Output:</strong> Without an intermediate logical layer, the resulting R code is often unreadable, unoptimized, and extremely difficult to test for true equivalence.</li>
+<li><strong>Brittle Output:</strong> Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.</li>
 </ul>
 </section>
 <section id="why-via-a-state-machine" class="slide level2">
@@ -362,7 +368,7 @@ Mark London
 <ul>
 <li>A State Machine models the true underlying <em>territory</em> of the data lifecycle, independent of the <em>map</em> (the syntax) of either language.</li>
 <li>It makes dependencies explicitly clear and eliminates hidden side effects.</li>
-<li>It safely allows the compiler to reorder, optimize, and mathematically verify transformations while ensuring behavioral equivalence.</li>
+<li>It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.</li>
 </ul>
 </section>
 <section id="what-is-a-state-machine" class="slide level2">
@@ -402,66 +408,66 @@ Mark London
 <div>
 <p></p><figure class=""><p></p>
 <div>
-<svg width="960" height="480" viewbox="0.00 0.00 579.44 64.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<svg width="960" height="480" viewbox="0.00 0.00 591.67 64.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 60)">
 <!-- S0 -->
 <g id="node1" class="node">
 <title>S0</title>
-<path fill="#ffcdd2" stroke="#c62828" stroke-width="2" d="M67.55,-56C67.55,-56 11.81,-56 11.81,-56 5.81,-56 -0.19,-50 -0.19,-44 -0.19,-44 -0.19,-12 -0.19,-12 -0.19,-6 5.81,0 11.81,0 11.81,0 67.55,0 67.55,0 73.55,0 79.55,-6 79.55,-12 79.55,-12 79.55,-44 79.55,-44 79.55,-50 73.55,-56 67.55,-56"></path>
-<text text-anchor="middle" x="39.68" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₀</text>
-<text text-anchor="middle" x="39.68" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X1=1</text>
+<path fill="#ffcdd2" stroke="#c62828" stroke-width="2" d="M67.89,-56C67.89,-56 12.04,-56 12.04,-56 6.04,-56 0.04,-50 0.04,-44 0.04,-44 0.04,-12 0.04,-12 0.04,-6 6.04,0 12.04,0 12.04,0 67.89,0 67.89,0 73.89,0 79.89,-6 79.89,-12 79.89,-12 79.89,-44 79.89,-44 79.89,-50 73.89,-56 67.89,-56"></path>
+<text text-anchor="middle" x="39.96" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₀</text>
+<text text-anchor="middle" x="39.96" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X₁ = 1</text>
 </g>
 <!-- S1 -->
 <g id="node2" class="node">
 <title>S1</title>
-<path fill="#fff9c4" stroke="#f57f17" stroke-width="2" d="M182.92,-56C182.92,-56 127.18,-56 127.18,-56 121.18,-56 115.18,-50 115.18,-44 115.18,-44 115.18,-12 115.18,-12 115.18,-6 121.18,0 127.18,0 127.18,0 182.92,0 182.92,0 188.92,0 194.92,-6 194.92,-12 194.92,-12 194.92,-44 194.92,-44 194.92,-50 188.92,-56 182.92,-56"></path>
-<text text-anchor="middle" x="155.05" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₁</text>
-<text text-anchor="middle" x="155.05" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Y=3</text>
+<path fill="#fff9c4" stroke="#f57f17" stroke-width="2" d="M183.48,-56C183.48,-56 127.74,-56 127.74,-56 121.74,-56 115.74,-50 115.74,-44 115.74,-44 115.74,-12 115.74,-12 115.74,-6 121.74,0 127.74,0 127.74,0 183.48,0 183.48,0 189.48,0 195.48,-6 195.48,-12 195.48,-12 195.48,-44 195.48,-44 195.48,-50 189.48,-56 183.48,-56"></path>
+<text text-anchor="middle" x="155.61" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₁</text>
+<text text-anchor="middle" x="155.61" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Y = 3</text>
 </g>
 <!-- S0&#45;&gt;S1 -->
 <g id="edge1" class="edge">
 <title>S0-&gt;S1</title>
-<path fill="none" stroke="#424242" stroke-width="2" d="M79.38,-28C87.59,-28 96.36,-28 104.9,-28"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="2" points="105.15,-31.5 115.15,-28 105.15,-24.5 105.15,-31.5"></polygon>
+<path fill="none" stroke="#424242" stroke-width="2" d="M80.07,-28C88.29,-28 97.06,-28 105.58,-28"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="2" points="105.81,-31.5 115.81,-28 105.81,-24.5 105.81,-31.5"></polygon>
 </g>
 <!-- S2 -->
 <g id="node3" class="node">
 <title>S2</title>
-<path fill="#c8e6c9" stroke="#2e7d32" stroke-width="2" d="M298.29,-56C298.29,-56 242.55,-56 242.55,-56 236.55,-56 230.55,-50 230.55,-44 230.55,-44 230.55,-12 230.55,-12 230.55,-6 236.55,0 242.55,0 242.55,0 298.29,0 298.29,0 304.29,0 310.29,-6 310.29,-12 310.29,-12 310.29,-44 310.29,-44 310.29,-50 304.29,-56 298.29,-56"></path>
-<text text-anchor="middle" x="270.42" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₂</text>
-<text text-anchor="middle" x="270.42" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X2=2</text>
+<path fill="#c8e6c9" stroke="#2e7d32" stroke-width="2" d="M299.18,-56C299.18,-56 243.33,-56 243.33,-56 237.33,-56 231.33,-50 231.33,-44 231.33,-44 231.33,-12 231.33,-12 231.33,-6 237.33,0 243.33,0 243.33,0 299.18,0 299.18,0 305.18,0 311.18,-6 311.18,-12 311.18,-12 311.18,-44 311.18,-44 311.18,-50 305.18,-56 299.18,-56"></path>
+<text text-anchor="middle" x="271.26" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₂</text>
+<text text-anchor="middle" x="271.26" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X₂ = 2</text>
 </g>
 <!-- S1&#45;&gt;S2 -->
 <g id="edge2" class="edge">
 <title>S1-&gt;S2</title>
-<path fill="none" stroke="#424242" stroke-width="2" d="M194.75,-28C202.96,-28 211.73,-28 220.27,-28"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="2" points="220.51,-31.5 230.51,-28 220.51,-24.5 220.51,-31.5"></polygon>
+<path fill="none" stroke="#424242" stroke-width="2" d="M195.4,-28C203.63,-28 212.42,-28 220.98,-28"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="2" points="221.25,-31.5 231.25,-28 221.25,-24.5 221.25,-31.5"></polygon>
 </g>
 <!-- S3 -->
 <g id="node4" class="node">
 <title>S3</title>
-<path fill="#b3e5fc" stroke="#0277bd" stroke-width="2" d="M413.66,-56C413.66,-56 357.92,-56 357.92,-56 351.92,-56 345.92,-50 345.92,-44 345.92,-44 345.92,-12 345.92,-12 345.92,-6 351.92,0 357.92,0 357.92,0 413.66,0 413.66,0 419.66,0 425.66,-6 425.66,-12 425.66,-12 425.66,-44 425.66,-44 425.66,-50 419.66,-56 413.66,-56"></path>
-<text text-anchor="middle" x="385.79" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₃</text>
-<text text-anchor="middle" x="385.79" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Z=14</text>
+<path fill="#b3e5fc" stroke="#0277bd" stroke-width="2" d="M414.78,-56C414.78,-56 359.04,-56 359.04,-56 353.04,-56 347.04,-50 347.04,-44 347.04,-44 347.04,-12 347.04,-12 347.04,-6 353.04,0 359.04,0 359.04,0 414.78,0 414.78,0 420.78,0 426.78,-6 426.78,-12 426.78,-12 426.78,-44 426.78,-44 426.78,-50 420.78,-56 414.78,-56"></path>
+<text text-anchor="middle" x="386.91" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₃</text>
+<text text-anchor="middle" x="386.91" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Z = 14</text>
 </g>
 <!-- S2&#45;&gt;S3 -->
 <g id="edge3" class="edge">
 <title>S2-&gt;S3</title>
-<path fill="none" stroke="#424242" stroke-width="2" d="M310.12,-28C318.33,-28 327.1,-28 335.64,-28"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="2" points="335.88,-31.5 345.88,-28 335.88,-24.5 335.88,-31.5"></polygon>
+<path fill="none" stroke="#424242" stroke-width="2" d="M311.37,-28C319.59,-28 328.35,-28 336.88,-28"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="2" points="337.11,-31.5 347.11,-28 337.11,-24.5 337.11,-31.5"></polygon>
 </g>
 <!-- S4 -->
 <g id="node5" class="node">
 <title>S4</title>
-<path fill="#e1bee7" stroke="#6a1b9a" stroke-width="2" d="M559.42,-56C559.42,-56 473.49,-56 473.49,-56 467.49,-56 461.49,-50 461.49,-44 461.49,-44 461.49,-12 461.49,-12 461.49,-6 467.49,0 473.49,0 473.49,0 559.42,0 559.42,0 565.42,0 571.42,-6 571.42,-12 571.42,-12 571.42,-44 571.42,-44 571.42,-50 565.42,-56 559.42,-56"></path>
-<text text-anchor="middle" x="516.46" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₄</text>
-<text text-anchor="middle" x="516.46" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Output=19</text>
+<path fill="#e1bee7" stroke="#6a1b9a" stroke-width="2" d="M571.71,-56C571.71,-56 474.55,-56 474.55,-56 468.55,-56 462.55,-50 462.55,-44 462.55,-44 462.55,-12 462.55,-12 462.55,-6 468.55,0 474.55,0 474.55,0 571.71,0 571.71,0 577.71,0 583.71,-6 583.71,-12 583.71,-12 583.71,-44 583.71,-44 583.71,-50 577.71,-56 571.71,-56"></path>
+<text text-anchor="middle" x="523.13" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₄</text>
+<text text-anchor="middle" x="523.13" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">Output = 19</text>
 </g>
 <!-- S3&#45;&gt;S4 -->
 <g id="edge4" class="edge">
 <title>S3-&gt;S4</title>
-<path fill="none" stroke="#424242" stroke-width="2" d="M425.75,-28C433.83,-28 442.54,-28 451.26,-28"></path>
-<polygon fill="#424242" stroke="#424242" stroke-width="2" points="451.45,-31.5 461.45,-28 451.45,-24.5 451.45,-31.5"></polygon>
+<path fill="none" stroke="#424242" stroke-width="2" d="M426.73,-28C434.74,-28 443.41,-28 452.15,-28"></path>
+<polygon fill="#424242" stroke="#424242" stroke-width="2" points="452.4,-31.5 462.4,-28 452.4,-24.5 452.4,-31.5"></polygon>
 </g>
 </g>
 </svg>
@@ -471,30 +477,111 @@ Mark London
 </div>
 </div>
 </section>
-<section id="state-machine-compiler-level" class="slide level2">
-<h2>State Machine (Compiler-Level)</h2>
-<ul>
-<li>Operations become nodes in a directed acyclic graph.</li>
-<li>States are the intermediate datasets produced by each node.</li>
-<li>The compiler can then optimize, reorder, and validate these transformations.</li>
-</ul>
+<section id="original_spss.txt-source" class="slide level2 appendix-slide">
+<h2>00_original_spss.txt (Source)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href=""></a>* Hello World Pipeline.</span>
+<span id="cb3-2"><a href=""></a></span>
+<span id="cb3-3"><a href=""></a>* 1. LOAD .</span>
+<span id="cb3-4"><a href=""></a>GET DATA</span>
+<span id="cb3-5"><a href=""></a>  /TYPE=TXT</span>
+<span id="cb3-6"><a href=""></a>  /FILE='hello.csv'</span>
+<span id="cb3-7"><a href=""></a>  /ARRANGEMENT=DELIMITED</span>
+<span id="cb3-8"><a href=""></a>  /DELIMITERS=','</span>
+<span id="cb3-9"><a href=""></a>  /FIRSTCASE=2</span>
+<span id="cb3-10"><a href=""></a>  /VARIABLES=</span>
+<span id="cb3-11"><a href=""></a>    id F8.0</span>
+<span id="cb3-12"><a href=""></a>    name A10.</span>
+<span id="cb3-13"><a href=""></a></span>
+<span id="cb3-14"><a href=""></a>* 2. SORT (The Test Case).</span>
+<span id="cb3-15"><a href=""></a>SORT CASES BY id.</span>
+<span id="cb3-16"><a href=""></a></span>
+<span id="cb3-17"><a href=""></a>* 3. SAVE (Using TRANSLATE to get a readable CSV).</span>
+<span id="cb3-18"><a href=""></a>SAVE TRANSLATE</span>
+<span id="cb3-19"><a href=""></a>  /OUTFILE='hello_sorted.csv'</span>
+<span id="cb3-20"><a href=""></a>  /TYPE=CSV</span>
+<span id="cb3-21"><a href=""></a>  /REPLACE.    </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="environment-considerations" class="slide level2">
-<h2>Environment Considerations</h2>
-<ul>
-<li>Linux (Rscript + PSPP easily installed)</li>
-<li>Windows: R via VS Code, PSPP absent -&gt; configurable commands or skip</li>
-</ul>
+<section id="source_verification.txt-pspp-run" class="slide level2 appendix-slide">
+<h2>01_source_verification.txt (PSPP run)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a href=""></a>Command: pspp hello.sps</span>
+<span id="cb4-2"><a href=""></a>Status: ✅ Success</span>
+<span id="cb4-3"><a href=""></a></span>
+<span id="cb4-4"><a href=""></a>=== OUTPUT ===</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="usage" class="slide level2">
-<h2>Usage</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="ex">python</span> src/compiler.py <span class="at">--manifest</span> demo/input/logic.sps <span class="dt">\</span></span>
-<span id="cb3-2"><a href=""></a>  <span class="at">--pspp-cmd</span> <span class="st">"echo PSPP skipped"</span> <span class="dt">\</span></span>
-<span id="cb3-3"><a href=""></a>  <span class="at">--rscript-cmd</span> Rscript</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="raw_topology.yaml-compiled-topology" class="slide level2 appendix-slide">
+<h2>02_raw_topology.yaml (Compiled Topology)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href=""></a><span class="co"># Pipeline Topology: 3 Operations</span></span>
+<span id="cb5-2"><a href=""></a><span class="pp">----------------------------------------</span></span>
+<span id="cb5-3"><a href=""></a><span class="fu">Operation</span><span class="kw">:</span><span class="at"> op_001_load</span></span>
+<span id="cb5-4"><a href=""></a><span class="at">  </span><span class="fu">Type</span><span class="kw">:</span><span class="at">    LOAD_CSV</span></span>
+<span id="cb5-5"><a href=""></a><span class="at">  </span><span class="fu">Inputs</span><span class="kw">:</span><span class="at">  </span><span class="kw">[]</span></span>
+<span id="cb5-6"><a href=""></a><span class="at">  </span><span class="fu">Outputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'source_hello.csv'</span><span class="kw">]</span></span>
+<span id="cb5-7"><a href=""></a><span class="at">  </span><span class="fu">Params</span><span class="kw">:</span><span class="at">  </span><span class="kw">{</span><span class="fu">'filename'</span><span class="kw">:</span><span class="at"> </span><span class="st">'hello.csv'</span><span class="kw">,</span><span class="at"> </span><span class="fu">'format'</span><span class="kw">:</span><span class="at"> </span><span class="st">'TXT'</span><span class="kw">,</span><span class="at"> </span><span class="fu">'schema'</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'id'</span><span class="kw">,</span><span class="at"> </span><span class="st">'name'</span><span class="kw">],</span><span class="at"> </span><span class="fu">'skip_rows'</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span><span class="kw">}</span></span>
+<span id="cb5-8"><a href=""></a></span>
+<span id="cb5-9"><a href=""></a><span class="fu">Operation</span><span class="kw">:</span><span class="at"> op_002_sort</span></span>
+<span id="cb5-10"><a href=""></a><span class="at">  </span><span class="fu">Type</span><span class="kw">:</span><span class="at">    SORT_ROWS</span></span>
+<span id="cb5-11"><a href=""></a><span class="at">  </span><span class="fu">Inputs</span><span class="kw">:</span><span class="at">  </span><span class="kw">[</span><span class="st">'source_hello.csv'</span><span class="kw">]</span></span>
+<span id="cb5-12"><a href=""></a><span class="at">  </span><span class="fu">Outputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'ds_001_sorted'</span><span class="kw">]</span></span>
+<span id="cb5-13"><a href=""></a><span class="at">  </span><span class="fu">Params</span><span class="kw">:</span><span class="at">  </span><span class="kw">{</span><span class="fu">'keys'</span><span class="kw">:</span><span class="at"> </span><span class="st">'id'</span><span class="kw">,</span><span class="at"> </span><span class="fu">'order'</span><span class="kw">:</span><span class="at"> </span><span class="st">'ascending'</span><span class="kw">}</span></span>
+<span id="cb5-14"><a href=""></a></span>
+<span id="cb5-15"><a href=""></a><span class="fu">Operation</span><span class="kw">:</span><span class="at"> op_003_save</span></span>
+<span id="cb5-16"><a href=""></a><span class="at">  </span><span class="fu">Type</span><span class="kw">:</span><span class="at">    SAVE_BINARY</span></span>
+<span id="cb5-17"><a href=""></a><span class="at">  </span><span class="fu">Inputs</span><span class="kw">:</span><span class="at">  </span><span class="kw">[</span><span class="st">'ds_001_sorted'</span><span class="kw">]</span></span>
+<span id="cb5-18"><a href=""></a><span class="at">  </span><span class="fu">Outputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'file_hello_sorted.csv'</span><span class="kw">]</span></span>
+<span id="cb5-19"><a href=""></a><span class="at">  </span><span class="fu">Params</span><span class="kw">:</span><span class="at">  </span><span class="kw">{</span><span class="fu">'filename'</span><span class="kw">:</span><span class="at"> </span><span class="st">'hello_sorted.csv'</span><span class="kw">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="questions" class="slide level2">
-<h2>Questions?</h2>
-<p><em>Detailed notes available in <code>docs/system_explanation.qmd</code>.</em></p>
+<section id="optimized_topology.yaml-optimized-topology" class="slide level2 appendix-slide">
+<h2>03_optimized_topology.yaml (Optimized Topology)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href=""></a><span class="co"># Pipeline Topology: 3 Operations</span></span>
+<span id="cb6-2"><a href=""></a><span class="pp">----------------------------------------</span></span>
+<span id="cb6-3"><a href=""></a><span class="fu">Operation</span><span class="kw">:</span><span class="at"> op_001_load</span></span>
+<span id="cb6-4"><a href=""></a><span class="at">  </span><span class="fu">Type</span><span class="kw">:</span><span class="at">    LOAD_CSV</span></span>
+<span id="cb6-5"><a href=""></a><span class="at">  </span><span class="fu">Inputs</span><span class="kw">:</span><span class="at">  </span><span class="kw">[]</span></span>
+<span id="cb6-6"><a href=""></a><span class="at">  </span><span class="fu">Outputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'source_hello.csv'</span><span class="kw">]</span></span>
+<span id="cb6-7"><a href=""></a><span class="at">  </span><span class="fu">Params</span><span class="kw">:</span><span class="at">  </span><span class="kw">{</span><span class="fu">'filename'</span><span class="kw">:</span><span class="at"> </span><span class="st">'hello.csv'</span><span class="kw">,</span><span class="at"> </span><span class="fu">'format'</span><span class="kw">:</span><span class="at"> </span><span class="st">'TXT'</span><span class="kw">,</span><span class="at"> </span><span class="fu">'schema'</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'id'</span><span class="kw">,</span><span class="at"> </span><span class="st">'name'</span><span class="kw">],</span><span class="at"> </span><span class="fu">'skip_rows'</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span><span class="kw">}</span></span>
+<span id="cb6-8"><a href=""></a></span>
+<span id="cb6-9"><a href=""></a><span class="fu">Operation</span><span class="kw">:</span><span class="at"> op_002_sort</span></span>
+<span id="cb6-10"><a href=""></a><span class="at">  </span><span class="fu">Type</span><span class="kw">:</span><span class="at">    SORT_ROWS</span></span>
+<span id="cb6-11"><a href=""></a><span class="at">  </span><span class="fu">Inputs</span><span class="kw">:</span><span class="at">  </span><span class="kw">[</span><span class="st">'source_hello.csv'</span><span class="kw">]</span></span>
+<span id="cb6-12"><a href=""></a><span class="at">  </span><span class="fu">Outputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'ds_001_sorted'</span><span class="kw">]</span></span>
+<span id="cb6-13"><a href=""></a><span class="at">  </span><span class="fu">Params</span><span class="kw">:</span><span class="at">  </span><span class="kw">{</span><span class="fu">'keys'</span><span class="kw">:</span><span class="at"> </span><span class="st">'id'</span><span class="kw">,</span><span class="at"> </span><span class="fu">'order'</span><span class="kw">:</span><span class="at"> </span><span class="st">'ascending'</span><span class="kw">}</span></span>
+<span id="cb6-14"><a href=""></a></span>
+<span id="cb6-15"><a href=""></a><span class="fu">Operation</span><span class="kw">:</span><span class="at"> op_003_save</span></span>
+<span id="cb6-16"><a href=""></a><span class="at">  </span><span class="fu">Type</span><span class="kw">:</span><span class="at">    SAVE_BINARY</span></span>
+<span id="cb6-17"><a href=""></a><span class="at">  </span><span class="fu">Inputs</span><span class="kw">:</span><span class="at">  </span><span class="kw">[</span><span class="st">'ds_001_sorted'</span><span class="kw">]</span></span>
+<span id="cb6-18"><a href=""></a><span class="at">  </span><span class="fu">Outputs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">'file_hello_sorted.csv'</span><span class="kw">]</span></span>
+<span id="cb6-19"><a href=""></a><span class="at">  </span><span class="fu">Params</span><span class="kw">:</span><span class="at">  </span><span class="kw">{</span><span class="fu">'filename'</span><span class="kw">:</span><span class="at"> </span><span class="st">'hello_sorted.csv'</span><span class="kw">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="generated_code.r-generated-r" class="slide level2 appendix-slide">
+<h2>04_generated_code.R (Generated R)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="co"># Auto-Generated ETL Script</span></span>
+<span id="cb7-2"><a href=""></a><span class="co"># Generated by: V&amp;V Compiler</span></span>
+<span id="cb7-3"><a href=""></a><span class="co"># Dialect: Tidyverse</span></span>
+<span id="cb7-4"><a href=""></a></span>
+<span id="cb7-5"><a href=""></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb7-6"><a href=""></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb7-7"><a href=""></a><span class="fu">library</span>(haven)</span>
+<span id="cb7-8"><a href=""></a></span>
+<span id="cb7-9"><a href=""></a><span class="co"># Op: op_001_load</span></span>
+<span id="cb7-10"><a href=""></a>source_hello.csv <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"hello.csv"</span>)</span>
+<span id="cb7-11"><a href=""></a></span>
+<span id="cb7-12"><a href=""></a><span class="co"># Op: op_002_sort</span></span>
+<span id="cb7-13"><a href=""></a>ds_001_sorted <span class="ot">&lt;-</span> source_hello.csv <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(id)</span>
+<span id="cb7-14"><a href=""></a></span>
+<span id="cb7-15"><a href=""></a><span class="co"># Op: op_003_save</span></span>
+<span id="cb7-16"><a href=""></a><span class="fu">write_csv</span>(ds_001_sorted, <span class="st">"hello_sorted.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="target_verification.txt-r-run" class="slide level2 appendix-slide">
+<h2>05_target_verification.txt (R run)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb8-1"><a href=""></a>Command: Rscript dist/pipeline.R</span>
+<span id="cb8-2"><a href=""></a>Status: ✅ Success</span>
+<span id="cb8-3"><a href=""></a></span>
+<span id="cb8-4"><a href=""></a>=== OUTPUT ===</span>
+<span id="cb8-5"><a href=""></a></span>
+<span id="cb8-6"><a href=""></a>── Column specification ────────────────────────────────────────────────────────</span>
+<span id="cb8-7"><a href=""></a>Delimiter: ","</span>
+<span id="cb8-8"><a href=""></a>chr (1): name</span>
+<span id="cb8-9"><a href=""></a>dbl (1): id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>```</p>
 
 </section>

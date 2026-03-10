@@ -180,3 +180,25 @@
 .reveal .title-slide h1 {
   margin-top: 3em;
 }
+
+.appendix-slide {
+  font-size: 0.75em;   /* or try 0.8em / 0.7em */
+}
+
+.appendix-slide pre code {
+  font-size: 0.70em;   /* shrink code blocks too */
+}
+
+.appendix-slide h2 {
+  font-size: 1.2em;    /* titles slightly smaller */
+}
+
+.appendix-slide h3 {
+  font-size: 1.0em;
+}
+
+.footnote {
+  font-size: 0.7em;
+  color: #555;
+  margin-top: 0.5em;
+}

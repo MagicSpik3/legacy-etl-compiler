@@ -20,8 +20,10 @@ execute:
 
 ## Overview
 
-- Purpose: migrate SPSS/PSPP logic into R pipelines
-- Verification & validation cycle
+- Purpose: migrate SPSS logic into R pipelines
+- Verification & validation cycle of output
+
+This is a proof of concept to explore the value potential of developing it into full product.
 
 ---
 
@@ -55,7 +57,7 @@ digraph {
     color="#1565C0";
     penwidth=2;
 
-    A [label="SPSS / PSPP Script", fillcolor="#BBDEFB", color="#0D47A1"];
+    A [label="SPSS Script", fillcolor="#BBDEFB", color="#0D47A1"];
     B [label="GraphBuilder", fillcolor="#90CAF9", color="#0D47A1"];
     C [label="Raw Topology YAML", fillcolor="#64B5F6", color="#0D47A1"];
 
@@ -63,14 +65,14 @@ digraph {
   }
 
   subgraph cluster_optimizer {
-    label="Optimizer";
+    label="Optimiser";
     fontsize=24;
     style=filled;
     fillcolor="#E8F5E9";
     color="#2E7D32";
     penwidth=2;
 
-    D [label="Optimized Topology", fillcolor="#A5D6A7", color="#1B5E20"];
+    D [label="Optimised Topology", fillcolor="#A5D6A7", color="#1B5E20"];
 
     C -> D;
   }
@@ -107,12 +109,16 @@ digraph {
 
 ```
 
+<div class="footnote">
+* PSPP is a free Linux version of SPSS. Whilst not identical, it accepts most SPSS syntax.
+</div>
+
 ---
 
 ## What is the legacy-etl-compiler system?
 
-* Takes an existing SPSS/PSPP pipeline and converts it into another language (e.g., R).
-* Uses an intermediate representation to make the compiler deterministic, testable, and optimizable.
+* Takes an existing SPSS pipeline and converts it into another language (e.g., R).
+* Uses an intermediate representation to make the compiler deterministic, testable, and optimisable.
 * The key intermediate representation is a **State Machine** built from the original script.
 
 ---
@@ -121,7 +127,7 @@ digraph {
 
 * **The Syntax Trap:** Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
 * **Hidden Side Effects:** SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
-* **Brittle Output:** Without an intermediate logical layer, the resulting R code is often unreadable, unoptimized, and extremely difficult to test for true equivalence.
+* **Brittle Output:** Without an intermediate logical layer, the resulting R code is often unreadable, unoptimised, and extremely difficult to test for true equivalence.
 
 ---
 
@@ -129,7 +135,7 @@ digraph {
 
 * A State Machine models the true underlying *territory* of the data lifecycle, independent of the *map* (the syntax) of either language.
 * It makes dependencies explicitly clear and eliminates hidden side effects.
-* It safely allows the compiler to reorder, optimize, and mathematically verify transformations while ensuring behavioral equivalence.
+* It safely allows the compiler to reorder, optimise, and mathematically verify transformations while ensuring behavioural equivalence.
 
 ---
 
@@ -215,26 +221,149 @@ digraph {
 
 ---
 
-## Environment Considerations
+## Verification Artifacts { .appendix-slide }
 
-* Linux (Rscript + PSPP easily installed)
-* Windows: R via VS Code, PSPP absent -> configurable commands or skip
+The folder `new_dist/verification` captures the full verification chain for the compiler run.
+
+```text
+- 00_original_spss.txt`: original SPSS/PSPP source script
+- 01_source_verification.txt`: PSPP execution status and output
+- 02_raw_topology.yaml`: compiler’s initial topology (graph) for the source
+- 03_optimized_topology.yaml`: topology after compiler optimizations
+- 04_generated_code.R`: generated R pipeline
+- 05_target_verification.txt`: R execution status and output
+```
 
 ---
 
-## Usage
+## 00_original_spss.txt (Source) { .appendix-slide }
 
-```bash
-python src/compiler.py --manifest demo/input/logic.sps \
-  --pspp-cmd "echo PSPP skipped" \
-  --rscript-cmd Rscript
+```text
+* Hello World Pipeline.
+
+* 1. LOAD .
+GET DATA
+  /TYPE=TXT
+  /FILE='hello.csv'
+  /ARRANGEMENT=DELIMITED
+  /DELIMITERS=','
+  /FIRSTCASE=2
+  /VARIABLES=
+    id F8.0
+    name A10.
+
+* 2. SORT (The Test Case).
+SORT CASES BY id.
+
+* 3. SAVE (Using TRANSLATE to get a readable CSV).
+SAVE TRANSLATE
+  /OUTFILE='hello_sorted.csv'
+  /TYPE=CSV
+  /REPLACE.    
+```
+
+---
+
+## 01_source_verification.txt (PSPP run) { .appendix-slide }
+
+```text
+Command: pspp hello.sps
+Status: ✅ Success
+
+=== OUTPUT ===
+```
+
+---
+
+## 02_raw_topology.yaml (Compiled Topology) { .appendix-slide }
+
+```yaml
+# Pipeline Topology: 3 Operations
+----------------------------------------
+Operation: op_001_load
+  Type:    LOAD_CSV
+  Inputs:  []
+  Outputs: ['source_hello.csv']
+  Params:  {'filename': 'hello.csv', 'format': 'TXT', 'schema': ['id', 'name'], 'skip_rows': 1}
+
+Operation: op_002_sort
+  Type:    SORT_ROWS
+  Inputs:  ['source_hello.csv']
+  Outputs: ['ds_001_sorted']
+  Params:  {'keys': 'id', 'order': 'ascending'}
+
+Operation: op_003_save
+  Type:    SAVE_BINARY
+  Inputs:  ['ds_001_sorted']
+  Outputs: ['file_hello_sorted.csv']
+  Params:  {'filename': 'hello_sorted.csv'}
+```
+
+---
+
+## 03_optimized_topology.yaml (Optimized Topology) { .appendix-slide }
+
+```yaml
+# Pipeline Topology: 3 Operations
+----------------------------------------
+Operation: op_001_load
+  Type:    LOAD_CSV
+  Inputs:  []
+  Outputs: ['source_hello.csv']
+  Params:  {'filename': 'hello.csv', 'format': 'TXT', 'schema': ['id', 'name'], 'skip_rows': 1}
+
+Operation: op_002_sort
+  Type:    SORT_ROWS
+  Inputs:  ['source_hello.csv']
+  Outputs: ['ds_001_sorted']
+  Params:  {'keys': 'id', 'order': 'ascending'}
+
+Operation: op_003_save
+  Type:    SAVE_BINARY
+  Inputs:  ['ds_001_sorted']
+  Outputs: ['file_hello_sorted.csv']
+  Params:  {'filename': 'hello_sorted.csv'}
 
 ```
 
 ---
 
-## Questions?
+## 04_generated_code.R (Generated R) { .appendix-slide }
 
-*Detailed notes available in `docs/system_explanation.qmd`.*
+```r
+# Auto-Generated ETL Script
+# Generated by: V&V Compiler
+# Dialect: Tidyverse
+
+library(tidyverse)
+library(lubridate)
+library(haven)
+
+# Op: op_001_load
+source_hello.csv <- read_csv("hello.csv")
+
+# Op: op_002_sort
+ds_001_sorted <- source_hello.csv %>% arrange(id)
+
+# Op: op_003_save
+write_csv(ds_001_sorted, "hello_sorted.csv")
+
+```
+
+---
+
+## 05_target_verification.txt (R run) { .appendix-slide }
+
+```text
+Command: Rscript dist/pipeline.R
+Status: ✅ Success
+
+=== OUTPUT ===
+
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (1): name
+dbl (1): id
+```
 
 ```
