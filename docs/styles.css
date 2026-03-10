@@ -1,45 +1,118 @@
-/* WAS RADAR Corporate Branding for Quarto RevealJS Slides */
+/* ==========================================================================
+   WAS RADAR Corporate Branding for Quarto RevealJS Slides 
+   ========================================================================== */
 
-/* Main slide background with subtle gradient */
+/* --------------------------------------------------------------------------
+   1. GLOBAL BACKGROUNDS & TEXT
+   -------------------------------------------------------------------------- */
+
+/* Main slide background with subtle gradient. 
+   '135deg' angles it from top-left to bottom-right. */
 .reveal .slides {
   background: linear-gradient(135deg, #ffffff 0%, #eef3f8 100%);
 }
 
-/* Title and heading colors - corporate blue */
+/* Base text color for standard paragraphs and list items */
+.reveal p, 
+.reveal li {
+  color: #333;
+}
+
+/* Bold text gets the corporate blue to make it pop */
+.reveal strong {
+  color: #1F4E79;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   2. HEADINGS
+   -------------------------------------------------------------------------- */
+
+/* All standard headings get the corporate blue and a semi-bold weight */
 .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
   color: #1F4E79;
   font-weight: 600;
 }
 
-/* Title slide specific styling */
-.reveal .title-slide h1 {
-  font-size: 2.4em;
-  color: #1F4E79;
-  text-align: left;
-}
-
+/* The Title Slide gets special treatment. We force left-alignment. */
 .reveal .title-slide {
   text-align: left;
 }
 
+/* Make the main presentation title much larger */
+.reveal .title-slide h1 {
+  font-size: 2.4em;
+  color: #1F4E79;
+  text-align: left;
+  margin-top: 3em; /* Pushes the title down so the big logo has room above it */
+}
+
+/* Subtitle color on the title slide */
 .reveal .title-slide .subtitle {
   color: #555;
 }
 
-/* Footer styling */
-.reveal .footer {
-  font-size: 13px;
-  color: #666;
-  position: absolute;
-  bottom: 10px;
-  right: 20px;
+/* --------------------------------------------------------------------------
+   3. LISTS & BULLETS (The Margin Fix)
+   -------------------------------------------------------------------------- */
+
+/* Use standard filled circles for bullets */
+.reveal ul {
+  list-style-type: disc;
 }
 
-/* Add a bottom branded bar */
+/* Color the actual bullet point (the marker) corporate blue */
+.reveal ul li::marker {
+  color: #1F4E79;
+}
+
+/* line-height controls the breathing room of text that wraps onto a SECOND line 
+   within the exact same bullet point. */
+.reveal ul li {
+  line-height: 1.2; 
+}
+
+/* margin-bottom controls the physical gap BETWEEN two separate bullet points.
+   FIX: Added !important. RevealJS is stubborn and has highly specific built-in 
+   rules. We use !important to tell the browser "I don't care what Reveal says, 
+   use my margin." */
+.reveal ul li, 
+.reveal ol li {
+  margin-bottom: 0.7em !important; 
+}
+
+/* We remove the margin from the very last bullet so the list doesn't push
+   subsequent content too far down the page. */
+.reveal ul li:last-child, 
+.reveal ol li:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. BARS & FOOTERS (Pseudo-elements ::before and ::after)
+   -------------------------------------------------------------------------- */
+
+/* Ensure the base background is white before we draw bars on it */
 .reveal .slide-background {
   background-color: #ffffff;
 }
 
+/* TOP BAR: '::before' injects an invisible box at the very top of every slide.
+   We make it 49px high and corporate blue. */
+.reveal .slide-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 49px;
+  background: #1F4E79;
+  z-index: 10; /* Z-index ensures it sits ON TOP of the background */
+}
+
+/* BOTTOM BAR: '::after' injects a box at the very bottom.
+   We are actually putting the text "WAS RADAR" directly into the CSS 'content' 
+   property so it prints on every slide automatically. */
 .reveal .slide-background::after {
   content: "WAS RADAR";
   position: absolute;
@@ -54,33 +127,75 @@
   letter-spacing: 0.5px;
 }
 
-/* Slide number styling */
+/* Hide the bottom bar strictly on the title slide so it doesn't look cluttered */
+.reveal .title-slide .slide-background::after {
+  display: none;
+}
+
+/* Standard slide number (bottom right) */
 .reveal .slide-number {
   font-size: 12px;
   color: #1F4E79;
   background: transparent;
 }
 
-/* Text and list styling */
-.reveal p, .reveal li {
-  color: #333;
+/* Standard footer text (bottom right, slightly above the bottom bar) */
+.reveal .footer {
+  font-size: 13px;
+  color: #666;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
 }
 
-.reveal ul {
-  list-style-type: disc;
+/* --------------------------------------------------------------------------
+   5. LOGO POSITIONING (The Specificity Fix)
+   -------------------------------------------------------------------------- */
+
+/* STANDARD SLIDES: Small logo in the top right, sitting over the blue top bar.
+   Notice the !important tags. These are required to beat Reveal's plugin defaults. */
+.reveal .slide-logo {
+  position: absolute !important;
+  top: 1px !important;
+  right: 10px !important;
+  width: 120px !important;     
+  height: auto !important;
+  max-height: none !important;
+  background: #eef3f8;        
+  padding: 4px;               
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  z-index: 20; /* High z-index keeps it on top of the top bar */
 }
 
-.reveal ul li::marker {
-  color: #1F4E79;
+/* TITLE SLIDE LOGO: We want it big and centered. 
+   FIX: Because the standard rule above used !important, this rule MUST ALSO 
+   use !important to override it. Otherwise, the browser ignores this entirely.
+   We also must set 'right: auto !important' to turn off the right-alignment
+   from the previous rule. */
+.reveal .title-slide .slide-logo {
+  width: 800px !important;               
+  max-width: 90% !important;
+  height: auto !important;
+  position: absolute !important;
+  top: 20% !important;
+  left: 50% !important;
+  right: auto !important; /* <--- CRITICAL FIX */
+  transform: translateX(-50%) !important; /* This mathematically perfectly centers it */
+  display: block !important;
 }
 
-/* Code block styling */
+/* --------------------------------------------------------------------------
+   6. CODE BLOCKS & TABLES
+   -------------------------------------------------------------------------- */
+
+/* The outer box for code blocks. 'pre' stands for preformatted text. */
 .reveal pre {
   width: 100%;
   background: #f5f5f5;
-  border-left: 4px solid #1F4E79;
+  border-left: 4px solid #1F4E79; /* A nice visual accent line on the left */
 }
 
+/* The actual text inside the code block, or inline `code` highlights */
 .reveal code {
   color: #1F4E79;
   padding: 2px 6px;
@@ -88,31 +203,31 @@
   border-radius: 3px;
 }
 
-/* Link styling */
+/* Links */
 .reveal a {
   color: #1F4E79;
   text-decoration: underline;
 }
 
 .reveal a:hover {
-  color: #0d2847;
+  color: #0d2847; /* Darkens slightly when hovered */
 }
 
-/* Blockquote styling */
+/* Blockquotes (using the > symbol in markdown) */
 .reveal blockquote {
   border-left: 4px solid #1F4E79;
   background: #f9f9f9;
   color: #555;
 }
 
-/* Table styling */
+/* Tables */
 .reveal table {
-  border-collapse: collapse;
+  border-collapse: collapse; /* Merges double borders into single borders */
 }
 
 .reveal table th {
   background: #1F4E79;
-  color: white;
+  color: white; /* Header row is blue with white text */
 }
 
 .reveal table td {
@@ -120,88 +235,42 @@
   padding: 8px;
 }
 
-/* Transition effects */
+/* NOTE: You had 'line-height: 1.3;' applied to transition effects here.
+   I have left it, but this actually controls global typography line height 
+   for the slides, not the animation speed of transitions. */
 .reveal .slides > section,
 .reveal .slides > section > section {
   line-height: 1.3;
 }
 
-/* Emphasis styling */
-.reveal strong {
-  color: #1F4E79;
-  font-weight: 700;
-}
+/* --------------------------------------------------------------------------
+   7. CUSTOM CLASSES (.appendix-slide & .footnote)
+   -------------------------------------------------------------------------- */
 
-/* header bar at top of every slide */
-.reveal .slide-background::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 49px;
-  background: #1F4E79;
-  z-index: 10;
-}
-
-/* general logo styling (top right) */
-.reveal .slide-logo {
-  /* override plugin defaults */
-  position: absolute !important;
-  top: 1px !important;
-  right: 10px !important;
-  width: 120px !important;     /* doubled size */
-  height: auto !important;
-  max-height: none !important;
-  background: #eef3f8;        /* match main slide off-white */
-  padding: 4px;               /* create small buffer around icon */
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
-  z-index: 20;
-}
-
-/* Hide title slide footer bar for visual consistency */
-.reveal .title-slide .slide-background::after {
-  display: none;
-}
-
-/* enlarge logo on title slide and reposition it center-top */
-.reveal .title-slide .slide-logo {
-  width: 800px;               /* roughly 10x default size; adjust if needed */
-  max-width: 90%;
-  height: auto;
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: block;
-}
-
-/* optional: push title text down when logo appears */
-.reveal .title-slide h1 {
-  margin-top: 3em;
-}
-/* Slightly smaller slide text, but not tiny */
+/* Custom class for your data-heavy slides at the end */
 .appendix-slide {
-  font-size: 0.85em;     /* was 0.5em */
+  font-size: 0.85em;     
 }
 
-/* Code blocks slightly smaller than normal text */
+/* Target code blocks specifically when they are inside an appendix slide */
 .appendix-slide pre code {
-  font-size: 0.80em !important;   /* was 0.65em */
+  font-size: 0.80em !important;   
   line-height: 1.25em;
 }
 
-/* Keep margins tight but not crushed */
+/* Keep the margins (space outside the box) tight on appendix slides */
 .appendix-slide pre {
   margin-top: 0.4em !important;
   margin-bottom: 0.4em !important;
 }
 
-/* Normalized title sizes */
+/* Keep headers readable on appendix slides */
 .appendix-slide h2,
 .appendix-slide h3 {
-  font-size: 1.10em !important;   /* readable and consistent */
+  font-size: 1.10em !important;   
 }
+
+/* Small, subtle text at the bottom of a slide */
 .footnote {
   font-size: 0.7em;
   color: #555;

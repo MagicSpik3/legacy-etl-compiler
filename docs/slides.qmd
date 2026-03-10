@@ -250,6 +250,7 @@ digraph {
       fontsize=28,
       fillcolor="white",
       color="#0D47A1",
+      width=10, height=7,
       label="COMPUTE income_tax = income * 0.2\nCOMPUTE net_income = income - income_tax\nEXECUTE"
     ];
   }
@@ -261,27 +262,39 @@ digraph {
   subgraph cluster_graph {
 
     label="Dependency Graph (Topology)";
-    fontsize=36;
+    fontsize=40;
     fontname="Helvetica-Bold";
     style=filled;
     fillcolor="#E8F5E9";
     color="#2E7D32";
     penwidth=3;
 
+
+    # 1. Increase margin to add space between nodes and the green border
+    # Format: "horizontal,vertical" in inches
+    margin=5; 
+
+    # 2. Set global node dimensions to push the cluster boundaries out
+    node [shape=box, fontsize=28, fillcolor="white", style=filled, width=3, height=1.5];
+
+
     income [
       label="income\nInput",
+      fontsize=36,
       fillcolor="#BBDEFB",
       color="#0D47A1"
     ];
 
     tax [
       label="income_tax\nDerived",
+      fontsize=36,
       fillcolor="#FFE082",
       color="#E65100"
     ];
 
     net [
       label="net_income\nOutput",
+      fontsize=36,
       fillcolor="#A5D6A7",
       color="#1B5E20"
     ];
@@ -297,6 +310,7 @@ digraph {
 
   code -> income [
     style=dashed,
+    fontsize=50,
     label="Parser extracts variables",
     color="#616161"
   ];
@@ -619,3 +633,6 @@ File Management
 - Temporary file management
 ```
 ---
+
+## Questions?
+
