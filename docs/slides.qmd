@@ -29,7 +29,6 @@ execute:
 
 ```{dot}
 digraph {
-
   rankdir=LR;
   bgcolor="transparent";
   fontname="Helvetica";
@@ -40,13 +39,11 @@ digraph {
     style="rounded,filled"
     fontname="Helvetica"
     fontsize=20
-    fillcolor="#F8F9FA"
-    color="#1F4E79"
     penwidth=2
   ];
 
   edge [
-    color="#1F4E79"
+    color="#424242"
     penwidth=3
   ];
 
@@ -54,13 +51,13 @@ digraph {
     label="Parser & Topology";
     fontsize=24;
     style=filled;
-    fillcolor="#E8F1FA";
-    color="#1F4E79";
+    fillcolor="#E3F2FD";
+    color="#1565C0";
     penwidth=2;
 
-    A [label="SPSS / PSPP Script"];
-    B [label="GraphBuilder"];
-    C [label="Raw Topology YAML"];
+    A [label="SPSS / PSPP Script", fillcolor="#BBDEFB", color="#0D47A1"];
+    B [label="GraphBuilder", fillcolor="#90CAF9", color="#0D47A1"];
+    C [label="Raw Topology YAML", fillcolor="#64B5F6", color="#0D47A1"];
 
     A -> B -> C;
   }
@@ -69,11 +66,11 @@ digraph {
     label="Optimizer";
     fontsize=24;
     style=filled;
-    fillcolor="#EAF7EA";
+    fillcolor="#E8F5E9";
     color="#2E7D32";
     penwidth=2;
 
-    D [label="Optimized Topology YAML"];
+    D [label="Optimized Topology", fillcolor="#A5D6A7", color="#1B5E20"];
 
     C -> D;
   }
@@ -86,8 +83,8 @@ digraph {
     color="#E65100";
     penwidth=2;
 
-    E [label="R Generator"];
-    F [label="Pipeline.R"];
+    E [label="R Generator", fillcolor="#FFCC80", color="#E65100"];
+    F [label="Pipeline.R", fillcolor="#FFB74D", color="#E65100"];
 
     D -> E -> F;
   }
@@ -100,39 +97,47 @@ digraph {
     color="#6A1B9A";
     penwidth=2;
 
-    G [label="PSPP"];
-    H [label="Rscript"];
+    G [label="PSPP Output", fillcolor="#CE93D8", color="#4A148C"];
+    H [label="Rscript Output", fillcolor="#BA68C8", color="#4A148C"];
 
-    A -> G;
-    F -> H;
+    A -> G [style=dashed, color="#4A148C"];
+    F -> H [style=dashed, color="#4A148C"];
   }
-
 }
+
 ```
 
 ---
 
 ## What is the legacy-etl-compiler system?
 
-- Takes an existing SPSS/PSPP pipeline and converts it into another language (e.g., R).
-- Uses an intermediate representation to make the compiler deterministic, testable, and optimizable.
-- The key intermediate representation is a **State Machine** built from the original script.
+* Takes an existing SPSS/PSPP pipeline and converts it into another language (e.g., R).
+* Uses an intermediate representation to make the compiler deterministic, testable, and optimizable.
+* The key intermediate representation is a **State Machine** built from the original script.
+
+---
+
+## Why not translate directly to R?
+
+* **The Syntax Trap:** Direct translation maps SPSS syntax directly to R syntax. This fails because the two languages have fundamentally different execution models.
+* **Hidden Side Effects:** SPSS is highly procedural and relies on a mutable "active dataset." R leans towards functional dataframe manipulation.
+* **Brittle Output:** Without an intermediate logical layer, the resulting R code is often unreadable, unoptimized, and extremely difficult to test for true equivalence.
 
 ---
 
 ## Why via a State Machine?
 
-- SPSS/PSPP scripts are *procedural* and *order-dependent*; changing the order can change results.
-- A State Machine makes dependencies explicit and avoids hidden side effects.
-- It lets us safely reorder, optimize, and verify transformations while preserving behavior.
+* A State Machine models the true underlying *territory* of the data lifecycle, independent of the *map* (the syntax) of either language.
+* It makes dependencies explicitly clear and eliminates hidden side effects.
+* It safely allows the compiler to reorder, optimize, and mathematically verify transformations while ensuring behavioral equivalence.
 
 ---
 
 ## What is a State Machine?
 
-- A mathematical model of a program where each operation transitions the system to a new state.
-- Instead of mutating variables, we create new versions (e.g., `X1`, `X2`, `X3`).
-- Each step is a deterministic state transition, which makes reasoning about pipelines easier.
+* A mathematical model of a program where each operation explicitly transitions the system to a new, immutable state.
+* Instead of mutating variables, we create new versions at each step (e.g., `X1`, `X2`, `X3`).
+* Each step is deterministic, making complex, messy legacy pipelines significantly easier to reason about.
 
 ---
 
@@ -146,15 +151,16 @@ Y <- X * 3
 X <- X + 1
 Z <- X * 7
 output sum X, Y, Z
+
 ```
 
 If run in this order, the values are:
 
-- X becomes 1
-- Y becomes 3
-- X becomes 2
-- Z becomes 14
-- sum = 19
+* X becomes 1
+* Y becomes 3
+* X becomes 2
+* Z becomes 14
+* sum = 19
 
 If the operations are reordered (e.g., computing Z before updating Y), the result changes.
 
@@ -164,41 +170,52 @@ If the operations are reordered (e.g., computing Z before updating Y), the resul
 
 Each step creates a new state (immutable datasets):
 
-- `X1` is given the value 1.
-- `Y` is computed from `X1` (3).
-- `X2` is updated from `X1` (2).
-- `Z` is computed from `X2` (14).
-- Output is the sum of `X2`, `Y`, and `Z` (19).
+* `X1` is given the value 1.
+* `Y` is computed from `X1` (3).
+* `X2` is updated from `X1` (2).
+* `Z` is computed from `X2` (14).
+* Output is the sum of `X2`, `Y`, and `Z` (19).
 
 ```{dot}
 digraph {
   rankdir=LR;
-  node [shape=box, style=rounded, fillcolor="#E8F1FA", color="#1F4E79", fontname="Helvetica", fontsize=20];
+  bgcolor="transparent";
+  
+  node [
+    shape=box, 
+    style="rounded,filled", 
+    fontname="Helvetica", 
+    fontsize=20,
+    penwidth=2
+  ];
+  
+  edge [color="#424242", penwidth=2];
 
-  S0 [label="State₀\nX=1"];
-  S1 [label="State₁\nY=3"];
-  S2 [label="State₂\nX=2"];
-  S3 [label="State₃\nZ=14"];
-  S4 [label="State₄\nOutput=19"];
+  S0 [label="State₀\nX=1", fillcolor="#FFCDD2", color="#C62828"];
+  S1 [label="State₁\nY=3", fillcolor="#FFF9C4", color="#F57F17"];
+  S2 [label="State₂\nX=2", fillcolor="#C8E6C9", color="#2E7D32"];
+  S3 [label="State₃\nZ=14", fillcolor="#B3E5FC", color="#0277BD"];
+  S4 [label="State₄\nOutput=19", fillcolor="#E1BEE7", color="#6A1B9A"];
 
   S0 -> S1 -> S2 -> S3 -> S4;
 }
+
 ```
 
 ---
 
 ## State Machine (Compiler-Level)
 
-- Operations become nodes in a directed acyclic graph.
-- States are the intermediate datasets produced by each node.
-- The compiler can then optimize, reorder, and validate these transformations.
+* Operations become nodes in a directed acyclic graph.
+* States are the intermediate datasets produced by each node.
+* The compiler can then optimize, reorder, and validate these transformations.
 
 ---
 
 ## Environment Considerations
 
-- Linux (Rscript + PSPP easily installed)
-- Windows: R via VS Code, PSPP absent -> configurable commands or skip
+* Linux (Rscript + PSPP easily installed)
+* Windows: R via VS Code, PSPP absent -> configurable commands or skip
 
 ---
 
@@ -208,6 +225,7 @@ digraph {
 python src/compiler.py --manifest demo/input/logic.sps \
   --pspp-cmd "echo PSPP skipped" \
   --rscript-cmd Rscript
+
 ```
 
 ---
@@ -216,25 +234,4 @@ python src/compiler.py --manifest demo/input/logic.sps \
 
 *Detailed notes available in `docs/system_explanation.qmd`.*
 
----
-
-## Environment Considerations
-
-- Linux (Rscript + PSPP easily installed)
-- Windows: R via VS Code, PSPP absent -> configurable commands or skip
-
----
-
-## Usage
-
-```bash
-python src/compiler.py --manifest demo/input/logic.sps \
-  --pspp-cmd "echo PSPP skipped" \
-  --rscript-cmd Rscript
 ```
-
----
-
-## Questions?
-
-*Detailed notes available in `docs/system_explanation.qmd`.*
