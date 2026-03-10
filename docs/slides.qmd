@@ -141,40 +141,45 @@ digraph {
 
 ---
 
-## Order Matters (Example)
+## Order Matters
+### Side‑by‑Side Comparison
 
-Consider the following sequential logic:
+::: columns
+
+::: column
+Original Order
 
 ```text
-X <- 1
-Y <- X * 3
-X <- X + 1
-Z <- X * 7
-output sum X, Y, Z
-
+X <- 1        → X = 1
+Y <- X * 3    → Y = 3
+X <- X + 1    → X = 2
+Z <- X * 7    → Z = 14
+sum(X, Y, Z) 
+Result = 19
 ```
 
-If run in this order, the values are:
+:::
 
-* X becomes 1
-* Y becomes 3
-* X becomes 2
-* Z becomes 14
-* sum = 19
+::: column
+Modified Order
 
-If the operations are reordered (e.g., computing Z before updating Y), the result changes.
+```text
+X <- 1        → X = 1
+Z <- X * 7    → Z = 7
+X <- X + 1    → X = 2
+Y <- X * 3    → Y = 6
+sum(X, Y, Z)
+Result = 15
+```
+
+:::
+
+:::
 
 ---
 
 ## State Machine View (Same Logic)
 
-Each step creates a new state (immutable datasets):
-
-* `X1` is given the value 1.
-* `Y` is computed from `X1` (3).
-* `X2` is updated from `X1` (2).
-* `Z` is computed from `X2` (14).
-* Output is the sum of `X2`, `Y`, and `Z` (19).
 
 ```{dot}
 digraph {
@@ -191,16 +196,14 @@ digraph {
   
   edge [color="#424242", penwidth=2];
 
-  S0 [label="State₀\nX=1", fillcolor="#FFCDD2", color="#C62828"];
-  S1 [label="State₁\nY=3", fillcolor="#FFF9C4", color="#F57F17"];
-  S2 [label="State₂\nX=2", fillcolor="#C8E6C9", color="#2E7D32"];
-  S3 [label="State₃\nZ=14", fillcolor="#B3E5FC", color="#0277BD"];
-  S4 [label="State₄\nOutput=19", fillcolor="#E1BEE7", color="#6A1B9A"];
+  S0 [label="State₀\nX₁ = 1", fillcolor="#FFCDD2", color="#C62828"];
+  S1 [label="State₁\nY = 3", fillcolor="#FFF9C4", color="#F57F17"];
+  S2 [label="State₂\nX₂ = 2", fillcolor="#C8E6C9", color="#2E7D32"];
+  S3 [label="State₃\nZ = 14", fillcolor="#B3E5FC", color="#0277BD"];
+  S4 [label="State₄\nOutput = 19", fillcolor="#E1BEE7", color="#6A1B9A"];
 
   S0 -> S1 -> S2 -> S3 -> S4;
 }
-
-```
 
 ---
 
@@ -208,7 +211,7 @@ digraph {
 
 * Operations become nodes in a directed acyclic graph.
 * States are the intermediate datasets produced by each node.
-* The compiler can then optimize, reorder, and validate these transformations.
+* The compiler can then optimise, reorder, and validate these transformations.
 
 ---
 

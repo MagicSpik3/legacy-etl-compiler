@@ -373,34 +373,30 @@ Mark London
 <li>Each step is deterministic, making complex, messy legacy pipelines significantly easier to reason about.</li>
 </ul>
 </section>
-<section id="order-matters-example" class="slide level2">
-<h2>Order Matters (Example)</h2>
-<p>Consider the following sequential logic:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href=""></a>X &lt;- 1</span>
-<span id="cb1-2"><a href=""></a>Y &lt;- X * 3</span>
-<span id="cb1-3"><a href=""></a>X &lt;- X + 1</span>
-<span id="cb1-4"><a href=""></a>Z &lt;- X * 7</span>
-<span id="cb1-5"><a href=""></a>output sum X, Y, Z</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If run in this order, the values are:</p>
-<ul>
-<li>X becomes 1</li>
-<li>Y becomes 3</li>
-<li>X becomes 2</li>
-<li>Z becomes 14</li>
-<li>sum = 19</li>
-</ul>
-<p>If the operations are reordered (e.g., computing Z before updating Y), the result changes.</p>
+<section id="order-matters" class="slide level2">
+<h2>Order Matters</h2>
+<h3 id="sidebyside-comparison">Side‑by‑Side Comparison</h3>
+<div class="columns">
+<div class="column">
+<p>Original Order</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href=""></a>X &lt;- 1        → X = 1</span>
+<span id="cb1-2"><a href=""></a>Y &lt;- X * 3    → Y = 3</span>
+<span id="cb1-3"><a href=""></a>X &lt;- X + 1    → X = 2</span>
+<span id="cb1-4"><a href=""></a>Z &lt;- X * 7    → Z = 14</span>
+<span id="cb1-5"><a href=""></a>sum(X, Y, Z) </span>
+<span id="cb1-6"><a href=""></a>Result = 19</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+<p>Modified Order</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a href=""></a>X &lt;- 1        → X = 1</span>
+<span id="cb2-2"><a href=""></a>Z &lt;- X * 7    → Z = 7</span>
+<span id="cb2-3"><a href=""></a>X &lt;- X + 1    → X = 2</span>
+<span id="cb2-4"><a href=""></a>Y &lt;- X * 3    → Y = 6</span>
+<span id="cb2-5"><a href=""></a>sum(X, Y, Z)</span>
+<span id="cb2-6"><a href=""></a>Result = 15</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div></div>
 </section>
 <section id="state-machine-view-same-logic" class="slide level2">
 <h2>State Machine View (Same Logic)</h2>
-<p>Each step creates a new state (immutable datasets):</p>
-<ul>
-<li><code>X1</code> is given the value 1.</li>
-<li><code>Y</code> is computed from <code>X1</code> (3).</li>
-<li><code>X2</code> is updated from <code>X1</code> (2).</li>
-<li><code>Z</code> is computed from <code>X2</code> (14).</li>
-<li>Output is the sum of <code>X2</code>, <code>Y</code>, and <code>Z</code> (19).</li>
-</ul>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
@@ -413,7 +409,7 @@ Mark London
 <title>S0</title>
 <path fill="#ffcdd2" stroke="#c62828" stroke-width="2" d="M67.55,-56C67.55,-56 11.81,-56 11.81,-56 5.81,-56 -0.19,-50 -0.19,-44 -0.19,-44 -0.19,-12 -0.19,-12 -0.19,-6 5.81,0 11.81,0 11.81,0 67.55,0 67.55,0 73.55,0 79.55,-6 79.55,-12 79.55,-12 79.55,-44 79.55,-44 79.55,-50 73.55,-56 67.55,-56"></path>
 <text text-anchor="middle" x="39.68" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₀</text>
-<text text-anchor="middle" x="39.68" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X=1</text>
+<text text-anchor="middle" x="39.68" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X1=1</text>
 </g>
 <!-- S1 -->
 <g id="node2" class="node">
@@ -433,7 +429,7 @@ Mark London
 <title>S2</title>
 <path fill="#c8e6c9" stroke="#2e7d32" stroke-width="2" d="M298.29,-56C298.29,-56 242.55,-56 242.55,-56 236.55,-56 230.55,-50 230.55,-44 230.55,-44 230.55,-12 230.55,-12 230.55,-6 236.55,0 242.55,0 242.55,0 298.29,0 298.29,0 304.29,0 310.29,-6 310.29,-12 310.29,-12 310.29,-44 310.29,-44 310.29,-50 304.29,-56 298.29,-56"></path>
 <text text-anchor="middle" x="270.42" y="-34" font-family="Helvetica,sans-Serif" font-size="20.00">State₂</text>
-<text text-anchor="middle" x="270.42" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X=2</text>
+<text text-anchor="middle" x="270.42" y="-10" font-family="Helvetica,sans-Serif" font-size="20.00">X2=2</text>
 </g>
 <!-- S1&#45;&gt;S2 -->
 <g id="edge2" class="edge">
@@ -492,9 +488,9 @@ Mark London
 </section>
 <section id="usage" class="slide level2">
 <h2>Usage</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href=""></a><span class="ex">python</span> src/compiler.py <span class="at">--manifest</span> demo/input/logic.sps <span class="dt">\</span></span>
-<span id="cb2-2"><a href=""></a>  <span class="at">--pspp-cmd</span> <span class="st">"echo PSPP skipped"</span> <span class="dt">\</span></span>
-<span id="cb2-3"><a href=""></a>  <span class="at">--rscript-cmd</span> Rscript</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="ex">python</span> src/compiler.py <span class="at">--manifest</span> demo/input/logic.sps <span class="dt">\</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="at">--pspp-cmd</span> <span class="st">"echo PSPP skipped"</span> <span class="dt">\</span></span>
+<span id="cb3-3"><a href=""></a>  <span class="at">--rscript-cmd</span> Rscript</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="questions" class="slide level2">
 <h2>Questions?</h2>
