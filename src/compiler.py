@@ -108,6 +108,7 @@ def compile_pipeline(manifest_path: str, pspp_cmd: str = "pspp", rscript_cmd: st
     print("\n[Stage 3] Optimization")
     optimizer = OptimizationCoordinator()
     optimized_pipeline = optimizer.optimize(raw_pipeline)
+    from spss_cataloger import SpssDirectoryCataloger
     
     artifacts.save_topology("03_optimized_topology.yaml", optimized_pipeline)
     
